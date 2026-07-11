@@ -147,8 +147,8 @@ input[type=range]::-webkit-slider-thumb{
   box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.06);
   display:flex;flex-direction:column;justify-content:space-between;padding:6px 7px;
   font-weight:700;font-size:18px;color:var(--ink);position:relative;
-  animation:dealCard .28s ease;
 }
+.card.dealing{animation:dealCard .26s ease;}
 .card.red{color:var(--red);}
 .card .rank-top{align-self:flex-start;line-height:1;}
 .card .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:30px;}
@@ -217,15 +217,51 @@ input[type=range]::-webkit-slider-thumb{
 
 /* ---------- Comptage tab ---------- */
 .count-stage{
-  background:radial-gradient(ellipse at 50% 40%, var(--felt-light), var(--felt-dark));
+  background:radial-gradient(ellipse at 50% 38%, var(--felt-light), var(--felt-dark));
   border-radius:18px;border:1px solid rgba(230,204,133,.15);
-  min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:relative;padding:20px;
+  min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;padding:20px;perspective:1100px;overflow:hidden;
 }
-.flash-card-zone{min-height:150px;display:flex;align-items:center;justify-content:center;}
-.flash-card{width:110px;height:158px;border-radius:12px;}
+/* the deck / shoe in the top-left corner */
+.deck-visual{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:96px;height:138px;}
+.deck-card{
+  position:absolute;inset:0;border-radius:11px;border:2px solid var(--gold);
+  background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
+  box-shadow:0 3px 8px rgba(0,0,0,.4);
+}
+.deck-card:nth-child(1){transform:translate(-3px,-3px);}
+.deck-card:nth-child(2){transform:translate(-1.5px,-1.5px);}
+.deck-card:nth-child(4){transform:translate(3px,3px);}
+.deck-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.45;color:var(--gold-light);white-space:nowrap;}
+
+.flash-card-zone{min-height:186px;display:flex;align-items:flex-end;justify-content:center;margin-top:120px;}
+
+/* 3D flip card dealt from the deck toward the player */
+.deal-card{width:120px;height:172px;position:relative;transform-style:preserve-3d;}
+.deal-card.animate{animation:dealFromDeck .5s cubic-bezier(.22,.7,.3,1) both;}
+.deal-card .face{
+  position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;padding:9px 11px;
+  font-weight:700;font-size:30px;
+}
+.deal-card .face.front{background:var(--cream);color:var(--ink);transform:rotateY(0deg);}
+.deal-card .face.front.red{color:var(--red);}
+.deal-card .face.back{
+  transform:rotateY(180deg);border:2px solid var(--gold);
+  background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
+}
+.deal-card .rank-top{align-self:flex-start;line-height:1;}
+.deal-card .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:56px;}
+.deal-card .rank-bot{align-self:flex-end;transform:rotate(180deg);line-height:1;}
+@keyframes dealFromDeck{
+  0%   {transform:translateY(-118px) scale(.72) rotateY(180deg);opacity:0;}
+  22%  {opacity:1;}
+  55%  {transform:translateY(-20px) scale(.9) rotateY(180deg);}
+  100% {transform:translateY(0) scale(1) rotateY(0deg);}
+}
+.flash-card{width:110px;height:158px;border-radius:12px;font-size:26px;}
 .flash-card .suit-mid{font-size:52px;}
-.flash-card{font-size:26px;}
 .count-progress{position:absolute;bottom:14px;left:14px;right:14px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
 .count-progress .bar{height:100%;background:var(--gold);width:0%;transition:width .1s linear;}
 .prompt-overlay{
@@ -259,12 +295,12 @@ input[type=range]::-webkit-slider-thumb{
 .legend-chip{display:flex;align-items:center;gap:6px;}
 .legend-swatch{width:14px;height:14px;border-radius:4px;}
 .strat-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(230,204,133,.15);}
-table.strat{border-collapse:collapse;width:100%;font-size:12.5px;min-width:560px;}
+table.strat{border-collapse:collapse;width:100%;font-size:12.5px;table-layout:fixed;}
 table.strat th, table.strat td{
-  text-align:center;padding:7px 4px;border:1px solid rgba(0,0,0,.25);
+  text-align:center;padding:7px 2px;border:1px solid rgba(0,0,0,.25);overflow:hidden;
 }
-table.strat thead th{background:rgba(0,0,0,.35);color:var(--gold-light);font-size:11px;letter-spacing:.04em;}
-table.strat tbody th{background:rgba(0,0,0,.28);color:var(--cream);font-weight:700;min-width:52px;}
+table.strat thead th{background:rgba(0,0,0,.35);color:var(--gold-light);font-size:11px;letter-spacing:.02em;}
+table.strat tbody th{background:rgba(0,0,0,.28);color:var(--cream);font-weight:700;width:12%;font-size:11.5px;}
 td.act-H{background:var(--grey);color:#fff;}
 td.act-S{background:var(--blue);color:#fff;}
 td.act-D{background:var(--gold);color:var(--ink);}
@@ -334,8 +370,18 @@ table.dev td.action-tag{font-weight:700;}
   .action-bar{gap:6px;margin-top:10px;}
   .action-bar button{min-width:0;flex:1;font-size:12.5px;padding:11px 4px;}
 
-  .flash-card{width:90px;height:130px;}
-  .flash-card .suit-mid{font-size:40px;}
+  .deal-card{width:104px;height:150px;}
+  .deal-card .suit-mid{font-size:48px;}
+  .deal-card .face{font-size:26px;}
+  .deck-visual{width:82px;height:120px;}
+  .flash-card-zone{margin-top:104px;min-height:164px;}
+
+  /* strategy tables fit the screen — no horizontal scroll */
+  table.strat{font-size:11px;}
+  table.strat th, table.strat td{padding:5px 1px;}
+  table.strat thead th{font-size:10px;}
+  table.strat tbody th{font-size:10px;width:13%;}
+  .strategy-legend{gap:8px 12px;font-size:11px;}
 }
 </style>
 </head>
@@ -462,11 +508,6 @@ table.dev td.action-tag{font-weight:700;}
           <input type="range" id="ct-speed" min="1" max="5" value="3">
           <div class="value-line"><span id="ct-speed-val">Normale</span></div>
         </div>
-        <div class="field">
-          <label>Nombre de joueurs simulés</label>
-          <input type="range" id="ct-players" min="1" max="7" value="3">
-          <div class="value-line"><span id="ct-players-val">3</span> joueur(s) (cartes/tour)</div>
-        </div>
       </div>
       <div class="setup-actions">
         <button class="btn btn-gold" id="btn-start-count">Démarrer le défilement</button>
@@ -480,6 +521,11 @@ table.dev td.action-tag{font-weight:700;}
       </div>
       <div class="count-stage">
         <div class="result-flash" id="ct-result-flash"></div>
+        <div class="deck-visual" id="ct-deck">
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-label">Sabot</div>
+        </div>
         <div class="flash-card-zone" id="flash-card-zone"></div>
         <div class="count-progress"><div class="bar" id="ct-progress-bar"></div></div>
         <div class="prompt-overlay" id="ct-prompt-overlay">
@@ -851,20 +897,36 @@ function updateMetrics(){
   });
 });
 
-function renderCard(card, faceDown){
+function renderCard(card, faceDown, animate){
   const div = document.createElement('div');
-  div.className = 'card' + (faceDown?' back':'') + (card && isRed(card.suit) && !faceDown ? ' red':'');
+  div.className = 'card' + (faceDown?' back':'') + (card && isRed(card.suit) && !faceDown ? ' red':'') + (animate?' dealing':'');
   if(!faceDown){
     div.innerHTML = `<div class="rank-top">${card.rank}</div><div class="suit-mid">${card.suit}</div><div class="rank-bot">${card.rank}</div>`;
   }
   return div;
 }
 
-function renderHand(container, cards, hideSecond){
-  container.innerHTML='';
+// Incrementally sync a set of cards into a container so that existing cards
+// are NOT re-created (which would re-trigger the deal animation and cause the
+// "jumping" glitch). Only genuinely new cards animate; face changes (hole-card
+// reveal) replace in place without a deal animation.
+function syncCards(container, cards, hideSecond){
+  const existing = Array.from(container.children);
   cards.forEach((c,i)=>{
-    container.appendChild(renderCard(c, hideSecond && i===1));
+    const faceDown = !!(hideSecond && i===1);
+    const el = existing[i];
+    if(!el){
+      container.appendChild(renderCard(c, faceDown, true));
+    } else {
+      const isBack = el.classList.contains('back');
+      if(isBack !== faceDown){
+        container.replaceChild(renderCard(c, faceDown, false), el);
+      }
+    }
   });
+  while(container.children.length > cards.length){
+    container.removeChild(container.lastElementChild);
+  }
 }
 
 async function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
@@ -931,7 +993,7 @@ function offerInsurance(){
 function renderAll(){
   const hideHole = game && !game.holeCardRevealed && game.dealer.cards.length>1;
   const dCont = document.getElementById('dealer-cards');
-  renderHand(dCont, game.dealer.cards, hideHole);
+  syncCards(dCont, game.dealer.cards, hideHole);
   const dTotalEl = document.getElementById('dealer-total');
   if(hideHole){
     dTotalEl.textContent = rankValue(game.dealer.cards[0].rank)+' + ?';
@@ -942,24 +1004,29 @@ function renderAll(){
   for(const s of game.seats){
     const cont = document.getElementById('seat-cards-'+s.seatNo);
     if(!cont) continue;
-    cont.innerHTML='';
     cont.style.display='flex';
     cont.style.justifyContent='center';
     cont.style.gap='8px';
-    s.hands.forEach((h,hi)=>{
+    // ensure one wrap per hand
+    while(cont.children.length < s.hands.length){
       const wrap = document.createElement('div');
+      wrap.className='hand-wrap';
       wrap.style.display='flex';
       wrap.style.alignItems='flex-start';
-      // active hand of the player gets a subtle highlight
-      if(s.isMe && hi===s.activeHandIdx && s.hands.length>1){
-        wrap.style.filter='drop-shadow(0 0 6px rgba(230,204,133,.6))';
-      }
-      h.cards.forEach((c,ci)=>{
-        const cardEl = renderCard(c,false);
-        if(ci>0) cardEl.style.marginLeft = '-18px';
-        wrap.appendChild(cardEl);
-      });
       cont.appendChild(wrap);
+    }
+    while(cont.children.length > s.hands.length){
+      cont.removeChild(cont.lastElementChild);
+    }
+    s.hands.forEach((h,hi)=>{
+      const wrap = cont.children[hi];
+      wrap.style.filter = (s.isMe && hi===s.activeHandIdx && s.hands.length>1)
+        ? 'drop-shadow(0 0 6px rgba(230,204,133,.6))' : 'none';
+      syncCards(wrap, h.cards, false);
+      // apply overlap margins to cards beyond the first
+      Array.from(wrap.children).forEach((cardEl,ci)=>{
+        cardEl.style.marginLeft = ci>0 ? '-18px' : '0';
+      });
     });
     const totalEl = document.getElementById('seat-total-'+s.seatNo);
     const parts = s.hands.map(h=>{
@@ -987,24 +1054,43 @@ async function playSeatsInOrder(dealerUp){
 }
 
 async function playBotTurn(seat, dealerUp){
-  let hand = seat.hands[0];
-  if(isBlackjack(hand.cards)){ hand.done=true; return; }
-  let guard=0;
-  while(!hand.done && guard<12){
-    guard++;
-    const hv = handValue(hand.cards);
-    if(hv.total>21){ hand.done=true; break; }
-    const rec = recommendAction(hand.cards, dealerUp, {canDouble:hand.cards.length===2, canSplit:false, canSurrender:false}, 0);
-    let action = rec.action;
-    if(action==='D') action = hand.cards.length===2 ? 'H' : 'S'; // bots don't double, just hit once more
-    if(action==='H'){
-      const c = drawCard(); hand.cards.push(c); countCard(c);
-      renderAll(); await sleep(500);
-      if(handValue(hand.cards).total>=21) hand.done=true;
-    } else {
-      hand.done=true;
+  if(isBlackjack(seat.hands[0].cards)){ seat.hands[0].done=true; return; }
+  let hIdx=0;
+  while(hIdx < seat.hands.length){
+    seat.activeHandIdx = hIdx;
+    const hand = seat.hands[hIdx];
+    let guard=0;
+    while(!hand.done && guard<12){
+      guard++;
+      const hv = handValue(hand.cards);
+      if(hv.total>21){ hand.done=true; break; }
+      const canDouble = hand.cards.length===2 && (seat.hands.length===1 || game.das);
+      const canSplit = hand.cards.length===2 && isPairHand(hand.cards) && seat.hands.length<MAX_SPLIT_HANDS;
+      const rec = recommendAction(hand.cards, dealerUp, {canDouble, canSplit, canSurrender:false}, 0);
+      let action = rec.action;
+      if(action==='R') action='H'; // bots don't surrender
+      if(action==='P'){
+        const wasAces = rankValue(hand.cards[0].rank)===11;
+        const c2 = hand.cards.pop();
+        seat.hands.push({cards:[c2], done:false});
+        const n1 = drawCard(); hand.cards.push(n1); countCard(n1);
+        const n2 = drawCard(); seat.hands[seat.hands.length-1].cards.push(n2); countCard(n2);
+        if(wasAces){ hand.done=true; seat.hands[seat.hands.length-1].done=true; }
+        updateMetrics(); renderAll(); await sleep(450);
+      } else if(action==='D'){
+        const c = drawCard(); hand.cards.push(c); countCard(c); hand.done=true;
+        updateMetrics(); renderAll(); await sleep(450);
+      } else if(action==='H'){
+        const c = drawCard(); hand.cards.push(c); countCard(c);
+        updateMetrics(); renderAll(); await sleep(450);
+        if(handValue(hand.cards).total>=21) hand.done=true;
+      } else { // Stand
+        hand.done=true;
+      }
     }
+    hIdx++;
   }
+  seat.activeHandIdx = 0;
 }
 
 const MAX_SPLIT_HANDS = 4; // up to 3 resplits, standard casino cap
@@ -1181,12 +1267,9 @@ ctDecks.addEventListener('input', ()=> ctDecksVal.textContent = ctDecks.value);
 const ctSpeed = document.getElementById('ct-speed');
 const ctSpeedVal = document.getElementById('ct-speed-val');
 const speedLabels = {1:'Très lente',2:'Lente',3:'Normale',4:'Rapide',5:'Très rapide'};
-const speedMs = {1:1800,2:1200,3:800,4:500,5:300};
+const speedMs = {1:2400,2:1600,3:1050,4:750,5:560};
 ctSpeed.addEventListener('input', ()=> ctSpeedVal.textContent = speedLabels[ctSpeed.value]);
-
-const ctPlayers = document.getElementById('ct-players');
-const ctPlayersVal = document.getElementById('ct-players-val');
-ctPlayers.addEventListener('input', ()=> ctPlayersVal.textContent = ctPlayers.value);
+function currentSpeedMs(){ return speedMs[ctSpeed.value] || 1050; }
 
 let countSession = null;
 let allTimeStats = {good:0, bad:0};
@@ -1221,14 +1304,12 @@ document.getElementById('btn-stop-count').addEventListener('click', stopCountSes
 let ctRunning = false;
 async function startCountSession(){
   const numDecks = parseInt(ctDecks.value,10);
-  const speed = speedMs[ctSpeed.value];
-  const playersPerRound = parseInt(ctPlayers.value,10);
   countSession = {good:0, bad:0, shoe: buildShoe(numDecks), rc:0, totalCards:numDecks*52};
   document.getElementById('count-setup').classList.add('hidden');
   document.getElementById('count-session').classList.remove('hidden');
   renderCountStats();
   ctRunning = true;
-  runCountLoop(speed, playersPerRound);
+  runCountLoop();
 }
 function stopCountSession(){
   ctRunning = false;
@@ -1236,25 +1317,38 @@ function stopCountSession(){
   document.getElementById('count-setup').classList.remove('hidden');
 }
 
-async function runCountLoop(speed, playersPerRound){
+function dealFlipCard(card){
   const zone = document.getElementById('flash-card-zone');
+  zone.innerHTML='';
+  const el = document.createElement('div');
+  el.className='deal-card animate';
+  const red = isRed(card.suit) ? ' red' : '';
+  el.innerHTML =
+    `<div class="face front${red}">
+       <div class="rank-top">${card.rank}</div>
+       <div class="suit-mid">${card.suit}</div>
+       <div class="rank-bot">${card.rank}</div>
+     </div>
+     <div class="face back"></div>`;
+  zone.appendChild(el);
+}
+
+async function runCountLoop(){
   const bar = document.getElementById('ct-progress-bar');
   let sinceLastPrompt = 0;
-  const promptEvery = Math.max(6, playersPerRound*2);
+  const promptEvery = 9; // ask roughly every ~9-16 cards
 
   while(ctRunning){
-    if(countSession.shoe.length < 15){
+    if(countSession.shoe.length < 6){
       countSession.shoe = buildShoe(parseInt(ctDecks.value,10));
       countSession.rc = 0;
     }
     const card = countSession.shoe.pop();
     countSession.rc += hiLoValue(card.rank);
 
-    zone.innerHTML='';
-    const cardEl = renderCard(card,false);
-    cardEl.classList.add('flash-card');
-    zone.appendChild(cardEl);
+    dealFlipCard(card);
 
+    const speed = currentSpeedMs(); // read live so slider changes take effect
     let elapsed=0;
     bar.style.width='0%';
     const tickMs=30;
@@ -1265,7 +1359,7 @@ async function runCountLoop(speed, playersPerRound){
     if(!ctRunning) break;
 
     sinceLastPrompt++;
-    const shouldPrompt = sinceLastPrompt>=promptEvery && Math.random()<0.55;
+    const shouldPrompt = sinceLastPrompt>=promptEvery && Math.random()<0.5;
     if(shouldPrompt || sinceLastPrompt>=promptEvery*2){
       sinceLastPrompt=0;
       const decksLeft = Math.max(0.5, countSession.shoe.length/52);
