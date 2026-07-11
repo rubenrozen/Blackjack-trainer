@@ -132,26 +132,26 @@ input[type=range]::-webkit-slider-thumb{
   overflow:visible;
 }
 .felt::before{
-  content:'21 CERCLE • PAIE 3:2 • ASSURANCE PAIE 2:1';
-  position:absolute;top:14%;left:50%;transform:translateX(-50%);
-  font-size:11px;letter-spacing:.18em;color:rgba(230,204,133,.35);font-weight:600;
-  white-space:nowrap;text-align:center;
+  content:'21 CERCLE • PAIE 3:2 • ASSURANCE 2:1';
+  position:absolute;top:41%;left:50%;transform:translateX(-50%);
+  font-size:11px;letter-spacing:.18em;color:rgba(230,204,133,.22);font-weight:600;
+  white-space:nowrap;text-align:center;pointer-events:none;
 }
 .dealer-zone{position:absolute;top:6%;left:50%;transform:translateX(-50%);text-align:center;width:220px;}
 .dealer-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.55;margin-bottom:6px;}
-.hand-cards{display:flex;gap:-10px;justify-content:center;min-height:86px;}
-.hand-cards.stacked .card{margin-left:-32px;}
+.hand-cards{display:flex;justify-content:center;min-height:96px;}
+.hand-cards.stacked .card{margin-left:-20px;}
 .hand-cards.stacked .card:first-child{margin-left:0;}
 .card{
-  width:56px;height:80px;border-radius:7px;background:var(--cream);
-  box-shadow:0 4px 10px rgba(0,0,0,.4);
-  display:flex;flex-direction:column;justify-content:space-between;padding:5px 6px;
-  font-weight:700;font-size:15px;color:var(--ink);position:relative;
+  width:66px;height:94px;border-radius:9px;background:var(--cream);
+  box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.06);
+  display:flex;flex-direction:column;justify-content:space-between;padding:6px 7px;
+  font-weight:700;font-size:18px;color:var(--ink);position:relative;
   animation:dealCard .28s ease;
 }
 .card.red{color:var(--red);}
 .card .rank-top{align-self:flex-start;line-height:1;}
-.card .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:26px;}
+.card .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:30px;}
 .card .rank-bot{align-self:flex-end;transform:rotate(180deg);line-height:1;}
 .card.back{
   background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
@@ -194,21 +194,24 @@ input[type=range]::-webkit-slider-thumb{
 .act-surrender{background:rgba(255,255,255,.1);color:var(--cream);}
 .action-bar button:disabled{opacity:.25;}
 
-/* metrics rail */
+/* metrics overlay (inside felt) */
 .metrics-rail{
-  display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;
+  position:absolute;top:14px;left:14px;z-index:5;
+  display:flex;flex-direction:column;gap:7px;
 }
 .metric-chip{
-  flex:1;min-width:140px;background:rgba(0,0,0,.28);border:1px solid rgba(230,204,133,.18);
-  border-radius:12px;padding:12px 16px;text-align:center;position:relative;cursor:default;
+  background:rgba(6,20,15,.55);border:1px solid rgba(230,204,133,.22);
+  border-radius:11px;padding:7px 12px;text-align:center;position:relative;cursor:default;
+  backdrop-filter:blur(3px);min-width:78px;
 }
-.metric-chip .m-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:4px;}
-.metric-chip .m-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--gold-light);}
+.metric-chip .m-label{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:2px;}
+.metric-chip .m-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--gold-light);line-height:1.05;}
 .metric-chip.secret{cursor:pointer;}
-.metric-chip.secret .m-val{filter:blur(7px);user-select:none;transition:filter .15s;}
+.metric-chip.secret .m-val{filter:blur(6px);user-select:none;transition:filter .15s;}
 .metric-chip.secret.revealed .m-val{filter:none;}
-.metric-chip.secret .m-hint{font-size:9.5px;opacity:.4;margin-top:3px;}
+.metric-chip.secret .m-hint{font-size:8.5px;opacity:.4;margin-top:1px;}
 
+.table-footer{display:flex;justify-content:center;gap:10px;margin-top:12px;}
 .setup-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
 .hidden{display:none !important;}
 
@@ -282,15 +285,57 @@ table.dev td.action-tag{font-weight:700;}
 .info-note{font-size:12.5px;opacity:.65;line-height:1.5;margin-top:10px;}
 
 @media (max-width:720px){
-  .felt{min-height:640px;border-radius:24px;padding:14px;}
-  .felt::before{font-size:8px;top:8%;}
-  .dealer-zone{top:5%;width:170px;}
-  .card{width:44px;height:64px;font-size:12px;}
+  #app{padding:10px 10px 14px;}
+  /* compact header */
+  .topbar{flex-direction:column;align-items:stretch;gap:12px;padding:2px 2px 12px;margin-bottom:12px;}
+  .brand{gap:9px;}
+  .brand .mark{width:30px;height:30px;font-size:13px;}
+  .brand h1{font-size:19px;}
+  .brand .tag{font-size:10px;}
+  .tabs{width:100%;}
+  .tab-btn{flex:1;padding:9px 4px;font-size:13px;}
+
+  /* when the table is live, lock the play view to one screen */
+  #view-play.playing .table-wrap{
+    display:flex;flex-direction:column;
+    height:calc(100dvh - 132px);
+  }
+  #view-play.playing .felt{
+    flex:1;min-height:0;border-radius:22px;padding:10px;border-width:10px;
+  }
+  #view-play.playing .action-bar{flex:none;}
+  #view-play.playing .table-footer{flex:none;}
+
+  .felt::before{font-size:8px;top:44%;letter-spacing:.12em;}
+  .dealer-zone{top:3%;width:auto;}
+  .dealer-label{font-size:10px;margin-bottom:3px;}
+
+  .card{width:60px;height:85px;font-size:16px;border-radius:8px;padding:5px 6px;}
+  .card .suit-mid{font-size:26px;}
+  .hand-cards{min-height:88px;}
+  .hand-cards.stacked .card{margin-left:-16px;}
+
+  .seat{width:118px;}
+  .seat .seat-label{font-size:9.5px;margin-bottom:3px;}
+  .seat .hand-cards{transform:scale(.72);min-height:60px;}
+  .seat.me .hand-cards{transform:scale(.92);}
+  .seat-msg{font-size:10px;padding:2px 6px;}
+  .hand-total{font-size:11px;margin-top:3px;}
+
+  .metrics-rail{top:9px;left:9px;gap:5px;}
+  .metric-chip{padding:5px 9px;min-width:60px;}
+  .metric-chip .m-val{font-size:16px;}
+  .metric-chip .m-label{font-size:8.5px;}
+  .metric-chip .m-hint{display:none;}
+
+  .feedback-banner{margin-top:8px;padding:8px 12px;font-size:12.5px;}
+  .feedback-banner .sub{font-size:11px;}
+
+  .action-bar{gap:6px;margin-top:10px;}
+  .action-bar button{min-width:0;flex:1;font-size:12.5px;padding:11px 4px;}
+
   .flash-card{width:90px;height:130px;}
   .flash-card .suit-mid{font-size:40px;}
-  .metric-chip{min-width:100px;padding:9px 10px;}
-  .metric-chip .m-val{font-size:17px;}
-  .action-bar button{min-width:78px;font-size:12.5px;padding:10px 10px;}
 }
 </style>
 </head>
@@ -358,6 +403,22 @@ table.dev td.action-tag{font-weight:700;}
 
     <div class="table-wrap hidden" id="table-panel">
       <div class="felt">
+        <div class="metrics-rail" id="metrics-rail">
+          <div class="metric-chip">
+            <div class="m-label">Paquets</div>
+            <div class="m-val" id="metric-decks">6.0</div>
+          </div>
+          <div class="metric-chip secret" id="metric-count-chip">
+            <div class="m-label">RC</div>
+            <div class="m-val" id="metric-count">0</div>
+            <div class="m-hint">révéler</div>
+          </div>
+          <div class="metric-chip secret" id="metric-tc-chip">
+            <div class="m-label">TC</div>
+            <div class="m-val" id="metric-tc">0.0</div>
+            <div class="m-hint">révéler</div>
+          </div>
+        </div>
         <div class="dealer-zone">
           <div class="dealer-label">Croupier</div>
           <div class="hand-cards stacked" id="dealer-cards"></div>
@@ -378,26 +439,9 @@ table.dev td.action-tag{font-weight:700;}
         <button class="act-surrender" id="act-surrender">Abandon</button>
       </div>
 
-      <div style="display:flex;justify-content:center;margin-top:14px;">
-        <button class="btn btn-outline" id="btn-next-hand" style="display:none;">Main suivante</button>
+      <div class="table-footer">
+        <button class="btn btn-gold" id="btn-next-hand" style="display:none;">Main suivante</button>
         <button class="btn btn-outline" id="btn-leave-table">Quitter la table</button>
-      </div>
-
-      <div class="metrics-rail">
-        <div class="metric-chip">
-          <div class="m-label">Paquets restants</div>
-          <div class="m-val" id="metric-decks">6.0</div>
-        </div>
-        <div class="metric-chip secret" id="metric-count-chip">
-          <div class="m-label">Compte courant (RC)</div>
-          <div class="m-val" id="metric-count">0</div>
-          <div class="m-hint">cliquer pour révéler</div>
-        </div>
-        <div class="metric-chip secret" id="metric-tc-chip">
-          <div class="m-label">True Count (TC)</div>
-          <div class="m-val" id="metric-tc">0.0</div>
-          <div class="m-hint">cliquer pour révéler</div>
-        </div>
       </div>
     </div>
   </div>
@@ -740,6 +784,7 @@ function startGame(){
   }
   document.getElementById('setup-panel').classList.add('hidden');
   document.getElementById('table-panel').classList.remove('hidden');
+  document.getElementById('view-play').classList.add('playing');
   layoutSeats();
   updateMetrics();
   dealRound();
@@ -749,6 +794,7 @@ document.getElementById('btn-start-game').addEventListener('click', startGame);
 document.getElementById('btn-leave-table').addEventListener('click', ()=>{
   document.getElementById('table-panel').classList.add('hidden');
   document.getElementById('setup-panel').classList.remove('hidden');
+  document.getElementById('view-play').classList.remove('playing');
   game=null;
 });
 
@@ -758,10 +804,11 @@ function layoutSeats(){
   const n = game.seatsCount;
   for(let i=0;i<n;i++){
     const seat = game.seats[i];
+    // Seat 1 sits on the right; higher seat numbers fan out to the left.
     const t = n===1 ? 0.5 : i/(n-1);
-    const leftPct = 12 + t*76;
-    const arc = Math.sin(t*Math.PI);
-    const topPct = 68 + arc*14;
+    const leftPct = n===1 ? 68 : (88 - t*76);
+    const arc = Math.sin((n===1?0.5:t)*Math.PI);
+    const topPct = 66 + arc*15;
     const div = document.createElement('div');
     div.className = 'seat'+(seat.isMe?' me':'');
     div.style.left = leftPct+'%';
@@ -827,6 +874,7 @@ async function dealRound(){
   document.getElementById('btn-next-hand').style.display='none';
   clearFeedback();
   game.dealer.cards = [];
+  game.holeCardRevealed = false;
   game.seats.forEach(s=>{ s.hands=[{cards:[], done:false, result:null}]; s.activeHandIdx=0; s.message=null; });
   renderAll();
 
@@ -840,8 +888,8 @@ async function dealRound(){
     }
     const dc = drawCard();
     game.dealer.cards.push(dc);
-    if(round===0) countCard(dc); // hole card counted only when revealed later
-    renderAll(true); await sleep(120);
+    if(round===0) countCard(dc); // upcard counted now; hole card counted when revealed
+    renderAll(); await sleep(120);
   }
   updateMetrics();
 
@@ -880,11 +928,12 @@ function offerInsurance(){
   });
 }
 
-function renderAll(hideDealerHole){
+function renderAll(){
+  const hideHole = game && !game.holeCardRevealed && game.dealer.cards.length>1;
   const dCont = document.getElementById('dealer-cards');
-  renderHand(dCont, game.dealer.cards, hideDealerHole && game.dealer.cards.length>1);
+  renderHand(dCont, game.dealer.cards, hideHole);
   const dTotalEl = document.getElementById('dealer-total');
-  if(hideDealerHole && game.dealer.cards.length>1){
+  if(hideHole){
     dTotalEl.textContent = rankValue(game.dealer.cards[0].rank)+' + ?';
   } else {
     const hv = handValue(game.dealer.cards);
@@ -893,12 +942,23 @@ function renderAll(hideDealerHole){
   for(const s of game.seats){
     const cont = document.getElementById('seat-cards-'+s.seatNo);
     if(!cont) continue;
-    const hand = s.hands[s.activeHandIdx] || s.hands[0];
     cont.innerHTML='';
+    cont.style.display='flex';
+    cont.style.justifyContent='center';
+    cont.style.gap='8px';
     s.hands.forEach((h,hi)=>{
       const wrap = document.createElement('div');
-      wrap.style.display='inline-block'; wrap.style.marginRight='6px';
-      h.cards.forEach(c=> wrap.appendChild(renderCard(c,false)));
+      wrap.style.display='flex';
+      wrap.style.alignItems='flex-start';
+      // active hand of the player gets a subtle highlight
+      if(s.isMe && hi===s.activeHandIdx && s.hands.length>1){
+        wrap.style.filter='drop-shadow(0 0 6px rgba(230,204,133,.6))';
+      }
+      h.cards.forEach((c,ci)=>{
+        const cardEl = renderCard(c,false);
+        if(ci>0) cardEl.style.marginLeft = '-18px';
+        wrap.appendChild(cardEl);
+      });
       cont.appendChild(wrap);
     });
     const totalEl = document.getElementById('seat-total-'+s.seatNo);
@@ -1061,10 +1121,10 @@ function clearFeedback(){
 
 async function dealerTurn(dealerUp){
   // reveal hole card
-  const hv0 = handValue([game.dealer.cards[0]]);
+  game.holeCardRevealed = true;
   countCard(game.dealer.cards[1]);
   updateMetrics();
-  renderAll(false);
+  renderAll();
   await sleep(400);
 
   const anyoneLeft = game.seats.some(s=> s.hands.some(h=> !h.surrendered && handValue(h.cards).total<=21));
@@ -1076,7 +1136,7 @@ async function dealerTurn(dealerUp){
       const mustHit = hv.total<17 || (hv.total===17 && hv.soft && game.h17);
       if(!mustHit) break;
       const c = drawCard(); game.dealer.cards.push(c); countCard(c); updateMetrics();
-      renderAll(false); await sleep(500);
+      renderAll(); await sleep(500);
     }
   }
   resolveRound();
@@ -1105,7 +1165,7 @@ function resolveRound(){
       s.message = null;
     }
   }
-  renderAll(false);
+  renderAll();
   document.getElementById('btn-next-hand').style.display='inline-block';
   disableAllActions();
 }
