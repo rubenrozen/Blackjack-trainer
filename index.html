@@ -28,7 +28,7 @@
   --shadow-deep: 0 20px 50px rgba(0,0,0,.45);
 }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
+html,body{margin:0;padding:0;overflow-x:hidden;max-width:100%;}
 body{
   background: radial-gradient(ellipse at 50% 0%, #163d30 0%, #081a14 70%);
   color:var(--cream);
@@ -41,7 +41,7 @@ h1,h2,h3,.display{font-family:'Fraunces',serif;}
 .mono{font-family:'JetBrains Mono',monospace;}
 
 /* ---------- App shell ---------- */
-#app{max-width:1180px;margin:0 auto;padding:18px 16px 60px;}
+#app{max-width:1180px;margin:0 auto;padding:18px 16px 60px;overflow-x:hidden;}
 .topbar{
   display:flex;align-items:baseline;justify-content:space-between;
   padding:6px 4px 18px;border-bottom:1px solid rgba(230,204,133,.18);
@@ -176,6 +176,22 @@ input[type=range]::-webkit-slider-thumb{
 .seat-msg.good{color:#a6e6b0;}
 .seat-msg.bad{color:#ffb4ab;}
 
+/* when the player splits, center the seat and keep all hands on screen */
+.seat.me.splitting{left:50% !important;top:60% !important;width:min(94vw,620px);z-index:6;}
+.seat.me.splitting .hand-cards{transform-origin:center top;flex-wrap:nowrap;}
+
+/* on-table decision score counter */
+.score-overlay{
+  position:absolute;top:14px;right:14px;z-index:5;text-align:right;
+  background:rgba(6,20,15,.55);border:1px solid rgba(230,204,133,.22);
+  border-radius:11px;padding:7px 12px;backdrop-filter:blur(3px);min-width:86px;
+}
+.score-overlay .so-label{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:2px;}
+.score-overlay .so-pct{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--gold-light);line-height:1.05;}
+.score-overlay .so-detail{font-size:10px;margin-top:2px;opacity:.8;}
+.score-overlay .so-good{color:#a6e6b0;}
+.score-overlay .so-bad{color:#ffb4ab;}
+
 .feedback-banner{
   margin-top:16px;padding:13px 18px;border-radius:11px;font-size:14px;font-weight:600;
   display:none;align-items:center;gap:10px;
@@ -270,6 +286,19 @@ input[type=range]::-webkit-slider-thumb{
   backdrop-filter:blur(2px);
 }
 .prompt-overlay.show{display:flex;}
+.verdict-overlay{
+  position:absolute;inset:0;border-radius:18px;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  backdrop-filter:blur(3px);text-align:center;padding:24px;
+}
+.verdict-overlay.show{display:flex;}
+.verdict-overlay.good{background:rgba(20,60,40,.9);}
+.verdict-overlay.bad{background:rgba(70,24,20,.9);}
+.verdict-icon{font-size:44px;line-height:1;}
+.verdict-main{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--cream);}
+.verdict-sub{font-size:14px;opacity:.9;font-family:'JetBrains Mono',monospace;}
+.verdict-overlay.good .verdict-sub{color:#a6e6b0;}
+.verdict-overlay.bad .verdict-sub{color:#ffc2ba;}
 .prompt-overlay h3{margin:0;color:var(--gold-light);font-size:18px;}
 .prompt-inputs{display:flex;gap:12px;}
 .prompt-inputs input{
@@ -417,7 +446,7 @@ table.dev td.action-tag{font-weight:700;}
         </div>
         <div class="field">
           <label>Autres joueurs (robots)</label>
-          <input type="range" id="cfg-bots" min="0" max="6" value="2">
+          <input type="range" id="cfg-bots" min="0" max="3" value="2">
           <div class="value-line"><span id="cfg-bots-val">2</span> robot(s) à table</div>
         </div>
         <div class="field">
@@ -465,6 +494,11 @@ table.dev td.action-tag{font-weight:700;}
             <div class="m-hint">révéler</div>
           </div>
         </div>
+        <div class="score-overlay" id="score-overlay">
+          <div class="so-label">Décisions</div>
+          <div class="so-pct" id="score-pct">—</div>
+          <div class="so-detail"><span class="so-good" id="score-good">0</span> / <span class="so-bad" id="score-bad">0</span></div>
+        </div>
         <div class="dealer-zone">
           <div class="dealer-label">Croupier</div>
           <div class="hand-cards stacked" id="dealer-cards"></div>
@@ -508,6 +542,11 @@ table.dev td.action-tag{font-weight:700;}
           <input type="range" id="ct-speed" min="1" max="5" value="3">
           <div class="value-line"><span id="ct-speed-val">Normale</span></div>
         </div>
+        <div class="field">
+          <label>Niveau (longueur des runs)</label>
+          <div class="seg" id="ct-level-seg"></div>
+          <div class="value-line" id="ct-level-desc">~8–14 cartes avant chaque question</div>
+        </div>
       </div>
       <div class="setup-actions">
         <button class="btn btn-gold" id="btn-start-count">Démarrer le défilement</button>
@@ -529,12 +568,16 @@ table.dev td.action-tag{font-weight:700;}
         <div class="flash-card-zone" id="flash-card-zone"></div>
         <div class="count-progress"><div class="bar" id="ct-progress-bar"></div></div>
         <div class="prompt-overlay" id="ct-prompt-overlay">
-          <h3>Où en est le compte ?</h3>
+          <h3>Quel est le compte courant ?</h3>
           <div class="prompt-inputs">
-            <div><label>Running Count</label><input type="number" id="ct-input-rc"></div>
-            <div><label>True Count</label><input type="number" id="ct-input-tc" step="0.5"></div>
+            <div><label>Running Count</label><input type="number" id="ct-input-rc" inputmode="numeric"></div>
           </div>
           <button class="btn btn-gold" id="ct-submit-guess">Valider</button>
+        </div>
+        <div class="verdict-overlay" id="ct-verdict-overlay">
+          <div class="verdict-icon" id="ct-verdict-icon"></div>
+          <div class="verdict-main" id="ct-verdict-main"></div>
+          <div class="verdict-sub" id="ct-verdict-sub"></div>
         </div>
       </div>
       <div class="stats-grid">
@@ -585,6 +628,17 @@ table.dev td.action-tag{font-weight:700;}
 <script>
 (function(){
 "use strict";
+
+/* Persistent storage — uses localStorage so it works on GitHub Pages / any host.
+   Wrapped in try/catch so it degrades gracefully if storage is unavailable. */
+function storeGet(key){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch(e){ return null; }
+}
+function storeSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }
+  catch(e){ /* storage blocked; ignore */ }
+}
 
 /* ============================================================
    CORE CARD / STRATEGY ENGINE
@@ -807,6 +861,7 @@ const cfgSurrender = wireSwitch('cfg-surrender', false);
    GAME STATE
    ============================================================ */
 let game = null;
+let playAllTime = storeGet('play-decisions-alltime') || {good:0, bad:0};
 
 function startGame(){
   const numDecks = parseInt(cfgDecks.value,10);
@@ -821,9 +876,11 @@ function startGame(){
     runningCount: 0,
     seatsCount: numBots+1,
     mySeat: mySeatChoice,
-    seats: [], // each: {isMe, hands:[{cards, done, result, bet}], activeHandIdx}
+    seats: [],
     dealer: {cards:[]},
     phase: 'idle',
+    decGood: 0,
+    decBad: 0,
   };
   for(let i=1;i<=game.seatsCount;i++){
     game.seats.push({seatNo:i, isMe: i===game.mySeat, hands:[], activeHandIdx:0, message:null});
@@ -833,7 +890,26 @@ function startGame(){
   document.getElementById('view-play').classList.add('playing');
   layoutSeats();
   updateMetrics();
+  updateScore();
   dealRound();
+}
+
+function updateScore(){
+  const g = game ? game.decGood : 0;
+  const b = game ? game.decBad : 0;
+  const total = g+b;
+  const pct = total ? Math.round((g/total)*100) : null;
+  document.getElementById('score-pct').textContent = pct===null ? '—' : pct+'%';
+  document.getElementById('score-good').textContent = g;
+  document.getElementById('score-bad').textContent = b;
+}
+
+function recordDecision(correct){
+  if(!game) return;
+  if(correct){ game.decGood++; playAllTime.good++; }
+  else { game.decBad++; playAllTime.bad++; }
+  storeSet('play-decisions-alltime', playAllTime);
+  updateScore();
 }
 
 document.getElementById('btn-start-game').addEventListener('click', startGame);
@@ -946,12 +1022,12 @@ async function dealRound(){
       const c = drawCard();
       s.hands[0].cards.push(c);
       countCard(c);
-      renderAll(); await sleep(120);
+      renderAll(); await sleep(300);
     }
     const dc = drawCard();
     game.dealer.cards.push(dc);
     if(round===0) countCard(dc); // upcard counted now; hole card counted when revealed
-    renderAll(); await sleep(120);
+    renderAll(); await sleep(300);
   }
   updateMetrics();
 
@@ -1007,6 +1083,21 @@ function renderAll(){
     cont.style.display='flex';
     cont.style.justifyContent='center';
     cont.style.gap='8px';
+    // when the player splits, center the seat and scale hands down so everything fits
+    const seatDiv = document.getElementById('seat-'+s.seatNo);
+    if(s.isMe && seatDiv){
+      if(s.hands.length>1){
+        seatDiv.classList.add('splitting');
+        const scale = s.hands.length>=4 ? 0.5 : (s.hands.length===3 ? 0.62 : 0.78);
+        cont.style.transform = 'scale('+scale+')';
+        cont.style.transformOrigin = 'center top';
+        cont.style.gap = '4px';
+      } else {
+        seatDiv.classList.remove('splitting');
+        cont.style.transform = '';
+        cont.style.gap = '8px';
+      }
+    }
     // ensure one wrap per hand
     while(cont.children.length < s.hands.length){
       const wrap = document.createElement('div');
@@ -1021,7 +1112,7 @@ function renderAll(){
     s.hands.forEach((h,hi)=>{
       const wrap = cont.children[hi];
       wrap.style.filter = (s.isMe && hi===s.activeHandIdx && s.hands.length>1)
-        ? 'drop-shadow(0 0 6px rgba(230,204,133,.6))' : 'none';
+        ? 'drop-shadow(0 0 7px rgba(230,204,133,.75))' : 'none';
       syncCards(wrap, h.cards, false);
       // apply overlap margins to cards beyond the first
       Array.from(wrap.children).forEach((cardEl,ci)=>{
@@ -1188,6 +1279,7 @@ function showFeedback(userAction, rec){
   const sub = document.getElementById('feedback-sub');
   const names = {H:'Tirer', S:'Rester', D:'Doubler', P:'Séparer', R:'Abandonner'};
   const correct = userAction===rec.action;
+  recordDecision(correct);
   banner.classList.remove('good','bad'); banner.classList.add('show', correct?'good':'bad');
   main.textContent = correct ? '✅ Bonne décision' : `⚠️ Stratégie de base : ${names[rec.action]}`;
   let subText = '';
@@ -1271,25 +1363,30 @@ const speedMs = {1:2400,2:1600,3:1050,4:750,5:560};
 ctSpeed.addEventListener('input', ()=> ctSpeedVal.textContent = speedLabels[ctSpeed.value]);
 function currentSpeedMs(){ return speedMs[ctSpeed.value] || 1050; }
 
-let countSession = null;
-let allTimeStats = {good:0, bad:0};
+// Difficulty levels — control how many cards run before you're asked the count.
+const LEVELS = [
+  {name:'Débutant',     min:6,  max:12, desc:'~6–12 cartes avant chaque question'},
+  {name:'Intermédiaire',min:14, max:22, desc:'~14–22 cartes avant chaque question'},
+  {name:'Avancé',       min:26, max:40, desc:'~26–40 cartes avant chaque question'},
+  {name:'Expert',       min:45, max:70, desc:'~45–70 cartes avant chaque question'},
+];
+let ctLevel = 0;
+const ctLevelSeg = document.getElementById('ct-level-seg');
+const ctLevelDesc = document.getElementById('ct-level-desc');
+function rebuildLevelSeg(){
+  ctLevelSeg.innerHTML='';
+  LEVELS.forEach((lv,i)=>{
+    const b=document.createElement('button');
+    b.textContent=lv.name;
+    if(i===ctLevel) b.classList.add('sel');
+    b.addEventListener('click', ()=>{ ctLevel=i; ctLevelDesc.textContent=LEVELS[i].desc; rebuildLevelSeg(); });
+    ctLevelSeg.appendChild(b);
+  });
+}
+rebuildLevelSeg();
 
-async function loadAllTime(){
-  try{
-    const res = await window.storage.get('counting-alltime', false);
-    if(res && res.value){
-      const parsed = JSON.parse(res.value);
-      allTimeStats = {good: parsed.good||0, bad: parsed.bad||0};
-    }
-  } catch(e){ /* no key yet or storage unavailable */ }
-  renderCountStats();
-}
-async function saveAllTime(){
-  try{
-    await window.storage.set('counting-alltime', JSON.stringify(allTimeStats), false);
-  } catch(e){ console.error('Storage error', e); }
-}
-loadAllTime();
+let countSession = null;
+let allTimeStats = storeGet('counting-alltime') || {good:0, bad:0};
 
 function renderCountStats(){
   document.getElementById('ct-session-good').textContent = countSession ? countSession.good : 0;
@@ -1297,6 +1394,7 @@ function renderCountStats(){
   document.getElementById('ct-alltime-good').textContent = allTimeStats.good;
   document.getElementById('ct-alltime-bad').textContent = allTimeStats.bad;
 }
+renderCountStats();
 
 document.getElementById('btn-start-count').addEventListener('click', startCountSession);
 document.getElementById('btn-stop-count').addEventListener('click', stopCountSession);
@@ -1333,13 +1431,18 @@ function dealFlipCard(card){
   zone.appendChild(el);
 }
 
+function nextRunLength(){
+  const lv = LEVELS[ctLevel];
+  return lv.min + Math.floor(Math.random()*(lv.max - lv.min + 1));
+}
+
 async function runCountLoop(){
   const bar = document.getElementById('ct-progress-bar');
   let sinceLastPrompt = 0;
-  const promptEvery = 9; // ask roughly every ~9-16 cards
+  let target = nextRunLength();
 
   while(ctRunning){
-    if(countSession.shoe.length < 6){
+    if(countSession.shoe.length < 4){
       countSession.shoe = buildShoe(parseInt(ctDecks.value,10));
       countSession.rc = 0;
     }
@@ -1359,24 +1462,18 @@ async function runCountLoop(){
     if(!ctRunning) break;
 
     sinceLastPrompt++;
-    const shouldPrompt = sinceLastPrompt>=promptEvery && Math.random()<0.5;
-    if(shouldPrompt || sinceLastPrompt>=promptEvery*2){
+    if(sinceLastPrompt>=target){
       sinceLastPrompt=0;
-      const decksLeft = Math.max(0.5, countSession.shoe.length/52);
+      target = nextRunLength();
       const actualRC = countSession.rc;
-      const actualTC = actualRC/decksLeft;
       const guess = await askGuess();
-      if(guess){
-        const rcOk = guess.rc === actualRC;
-        const tcOk = Math.abs(guess.tc - actualTC) <= 0.5;
-        const ok = rcOk && tcOk;
-        if(ok){ countSession.good++; } else { countSession.bad++; }
-        allTimeStats[ok?'good':'bad']++;
-        renderCountStats();
-        await saveAllTime();
-        flashResult(ok, actualRC, actualTC);
-        await sleep(1100);
-      }
+      if(guess===null) continue; // empty submit: skip scoring
+      const ok = guess === actualRC;
+      if(ok){ countSession.good++; } else { countSession.bad++; }
+      allTimeStats[ok?'good':'bad']++;
+      storeSet('counting-alltime', allTimeStats);
+      renderCountStats();
+      await showVerdict(ok, guess, actualRC);
     }
   }
 }
@@ -1385,27 +1482,35 @@ function askGuess(){
   return new Promise(resolve=>{
     const overlay = document.getElementById('ct-prompt-overlay');
     const rcInput = document.getElementById('ct-input-rc');
-    const tcInput = document.getElementById('ct-input-tc');
-    rcInput.value=''; tcInput.value='';
+    rcInput.value='';
     overlay.classList.add('show');
-    rcInput.focus();
+    setTimeout(()=>rcInput.focus(), 30);
     const submit = document.getElementById('ct-submit-guess');
     function handler(){
+      const rc = parseInt(rcInput.value,10);
+      if(isNaN(rc)) { rcInput.focus(); return; } // require a value
       overlay.classList.remove('show');
       submit.removeEventListener('click', handler);
-      const rc = parseInt(rcInput.value,10);
-      const tc = parseFloat(tcInput.value);
-      if(isNaN(rc) || isNaN(tc)){ resolve(null); return; }
-      resolve({rc, tc});
+      rcInput.removeEventListener('keydown', keyHandler);
+      resolve(rc);
     }
+    function keyHandler(e){ if(e.key==='Enter') handler(); }
     submit.addEventListener('click', handler);
+    rcInput.addEventListener('keydown', keyHandler);
   });
 }
-function flashResult(ok, rc, tc){
-  const el = document.getElementById('ct-result-flash');
-  el.textContent = ok ? `✅ Correct — RC ${rc}, TC ${tc.toFixed(1)}` : `❌ Faux — RC réel ${rc}, TC réel ${tc.toFixed(1)}`;
-  el.classList.remove('good','bad'); el.classList.add(ok?'good':'bad','show');
-  setTimeout(()=> el.classList.remove('show'), 1050);
+
+function showVerdict(ok, guess, actualRC){
+  return new Promise(resolve=>{
+    const ov = document.getElementById('ct-verdict-overlay');
+    document.getElementById('ct-verdict-icon').textContent = ok ? '✅' : '❌';
+    document.getElementById('ct-verdict-main').textContent = ok ? 'Correct !' : 'Raté';
+    document.getElementById('ct-verdict-sub').textContent = ok
+      ? ('Compte courant = '+actualRC)
+      : ('Ta réponse : '+guess+'   —   Compte réel : '+actualRC);
+    ov.classList.remove('good','bad'); ov.classList.add('show', ok?'good':'bad');
+    setTimeout(()=>{ ov.classList.remove('show'); resolve(); }, ok ? 1300 : 2400);
+  });
 }
 
 /* ============================================================
