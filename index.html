@@ -238,8 +238,10 @@ input[type=range]::-webkit-slider-thumb{
   min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   position:relative;padding:20px;perspective:1100px;overflow:hidden;
 }
-/* the deck / shoe in the top-left corner */
+/* the deck / shoe */
 .deck-visual{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:96px;height:138px;}
+.count-stage.table-mode .deck-visual{top:14px;left:14px;transform:none;width:56px;height:80px;}
+.count-stage.table-mode .deck-label{display:none;}
 .deck-card{
   position:absolute;inset:0;border-radius:11px;border:2px solid var(--gold);
   background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
@@ -253,31 +255,53 @@ input[type=range]::-webkit-slider-thumb{
 
 .flash-card-zone{min-height:186px;display:flex;align-items:flex-end;justify-content:center;margin-top:120px;}
 
-/* 3D flip card dealt from the deck toward the player */
-.deal-card{width:120px;height:172px;position:relative;transform-style:preserve-3d;}
-.deal-card.animate{animation:dealFromDeck .5s cubic-bezier(.22,.7,.3,1) both;}
-.deal-card .face{
-  position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;
-  display:flex;flex-direction:column;justify-content:space-between;padding:9px 11px;
-  font-weight:700;font-size:30px;
+/* ---- shared flip card (used by pile + table) ---- */
+.cc{position:absolute;transform-style:preserve-3d;}
+.cc .flip{
+  width:100%;height:100%;position:relative;transform-style:preserve-3d;
+  animation:cardIn .42s cubic-bezier(.25,.9,.3,1) both;
 }
-.deal-card .face.front{background:var(--cream);color:var(--ink);transform:rotateY(0deg);}
-.deal-card .face.front.red{color:var(--red);}
-.deal-card .face.back{
+.cc.closing .flip{animation:cardOut .32s cubic-bezier(.4,0,.6,1) both;}
+.cc .face{
+  position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;padding:6px 8px;
+  font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+.cc .face.front{background:var(--cream);color:var(--ink);}
+.cc .face.front.red{color:var(--red);}
+.cc .face.back{
   transform:rotateY(180deg);border:2px solid var(--gold);
   background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
 }
-.deal-card .rank-top{align-self:flex-start;line-height:1;}
-.deal-card .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:56px;}
-.deal-card .rank-bot{align-self:flex-end;transform:rotate(180deg);line-height:1;}
-@keyframes dealFromDeck{
-  0%   {transform:translateY(-118px) scale(.72) rotateY(180deg);opacity:0;}
-  22%  {opacity:1;}
-  55%  {transform:translateY(-20px) scale(.9) rotateY(180deg);}
-  100% {transform:translateY(0) scale(1) rotateY(0deg);}
+.cc .rank-top{align-self:flex-start;line-height:1;}
+.cc .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.cc .rank-bot{align-self:flex-end;transform:rotate(180deg);line-height:1;}
+/* smooth continuous deal: slides down from the deck while flipping face-up, eases to rest, stays */
+@keyframes cardIn{
+  0%   {transform:translate(var(--fromX,0), var(--fromY,-140px)) scale(.82) rotateY(180deg);opacity:0;}
+  30%  {opacity:1;}
+  100% {transform:translate(0,0) scale(1) rotateY(0deg);opacity:1;}
 }
-.flash-card{width:110px;height:158px;border-radius:12px;font-size:26px;}
-.flash-card .suit-mid{font-size:52px;}
+/* closing: card flips back face-down and lifts away */
+@keyframes cardOut{
+  0%   {transform:translate(0,0) rotateY(0deg);opacity:1;}
+  100% {transform:translate(0,-16px) scale(.9) rotateY(180deg);opacity:0;}
+}
+
+/* ---- Flux mode: a growing pile ---- */
+.pile-zone{position:absolute;top:170px;left:50%;transform:translateX(-50%);width:118px;height:168px;}
+.pile-zone .cc{width:118px;height:168px;inset:0;}
+.pile-zone .cc .suit-mid{font-size:56px;}
+.pile-zone .cc .face{font-size:30px;}
+
+/* ---- Table mode ---- */
+.ct-table{position:absolute;inset:0;display:none;}
+.ct-table.show{display:block;}
+.ct-seat-label{position:absolute;font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.5;color:var(--cream);white-space:nowrap;transform:translateX(-50%);}
+.ct-table .cc{width:52px;height:74px;}
+.ct-table .cc .suit-mid{font-size:24px;}
+.ct-table .cc .face{font-size:14px;border-radius:7px;padding:3px 4px;}
+
 .count-progress{position:absolute;bottom:14px;left:14px;right:14px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
 .count-progress .bar{height:100%;background:var(--gold);width:0%;transition:width .1s linear;}
 .prompt-overlay{
@@ -348,6 +372,13 @@ table.dev td.action-tag{font-weight:700;}
 .action-tag.P{color:#c3a6e6;}
 
 .info-note{font-size:12.5px;opacity:.65;line-height:1.5;margin-top:10px;}
+.insurance-callout{
+  display:flex;gap:10px;align-items:flex-start;margin:6px 0 14px;
+  background:rgba(201,162,75,.12);border:1px solid rgba(230,204,133,.3);
+  border-radius:11px;padding:12px 14px;font-size:13px;line-height:1.45;
+}
+.insurance-callout strong{color:var(--gold-light);}
+.insurance-callout .ic-icon{font-size:20px;line-height:1.2;}
 
 @media (max-width:720px){
   #app{padding:10px 10px 14px;}
@@ -530,7 +561,12 @@ table.dev td.action-tag{font-weight:700;}
   <div class="view" id="view-count">
     <div class="card-panel" id="count-setup">
       <h2>Entraînement au comptage</h2>
-      <div class="sub">Les cartes défilent automatiquement — garde le compte Hi-Lo en tête.</div>
+      <div class="sub">Garde le compte Hi-Lo en tête pendant que les cartes défilent.</div>
+      <div class="field" style="margin-bottom:16px;">
+        <label>Mode de jeu</label>
+        <div class="seg" id="ct-mode-seg"></div>
+        <div class="value-line" id="ct-mode-desc">Flux continu : une carte après l'autre.</div>
+      </div>
       <div class="field-grid">
         <div class="field">
           <label>Nombre de paquets</label>
@@ -538,18 +574,23 @@ table.dev td.action-tag{font-weight:700;}
           <div class="value-line"><span id="ct-decks-val">4</span> paquet(s)</div>
         </div>
         <div class="field">
-          <label>Vitesse de défilement</label>
+          <label>Vitesse</label>
           <input type="range" id="ct-speed" min="1" max="5" value="3">
           <div class="value-line"><span id="ct-speed-val">Normale</span></div>
         </div>
+        <div class="field" id="ct-players-field" style="display:none;">
+          <label>Joueurs à la table</label>
+          <input type="range" id="ct-players" min="1" max="6" value="4">
+          <div class="value-line"><span id="ct-players-val">4</span> joueur(s) + croupier</div>
+        </div>
         <div class="field">
-          <label>Niveau (longueur des runs)</label>
+          <label>Niveau</label>
           <div class="seg" id="ct-level-seg"></div>
-          <div class="value-line" id="ct-level-desc">~8–14 cartes avant chaque question</div>
+          <div class="value-line" id="ct-level-desc">~6–12 cartes avant chaque question</div>
         </div>
       </div>
       <div class="setup-actions">
-        <button class="btn btn-gold" id="btn-start-count">Démarrer le défilement</button>
+        <button class="btn btn-gold" id="btn-start-count">Démarrer</button>
       </div>
     </div>
 
@@ -558,14 +599,16 @@ table.dev td.action-tag{font-weight:700;}
         <h2 style="margin:0;">Session en cours</h2>
         <button class="btn btn-outline" id="btn-stop-count">Arrêter</button>
       </div>
-      <div class="count-stage">
-        <div class="result-flash" id="ct-result-flash"></div>
+      <div class="count-stage" id="count-stage">
         <div class="deck-visual" id="ct-deck">
           <div class="deck-card"></div><div class="deck-card"></div>
           <div class="deck-card"></div><div class="deck-card"></div>
           <div class="deck-label">Sabot</div>
         </div>
-        <div class="flash-card-zone" id="flash-card-zone"></div>
+        <!-- Mode Flux : pile de cartes qui s'empilent -->
+        <div class="pile-zone" id="pile-zone"></div>
+        <!-- Mode Table : positions des joueurs + croupier -->
+        <div class="ct-table" id="ct-table"></div>
         <div class="count-progress"><div class="bar" id="ct-progress-bar"></div></div>
         <div class="prompt-overlay" id="ct-prompt-overlay">
           <h3>Quel est le compte courant ?</h3>
@@ -617,9 +660,13 @@ table.dev td.action-tag{font-weight:700;}
 
     <div class="card-panel">
       <h2>Déviations selon le True Count</h2>
-      <div class="sub">L'Illustrious 18 complet de Don Schlesinger (Blackjack Attack) — les 18 écarts les plus rentables par rapport à la stratégie de base, calibrés pour 6 paquets / S17 / DAS.</div>
+      <div class="sub">L'Illustrious 18 complet de Don Schlesinger (Blackjack Attack) — les écarts les plus rentables par rapport à la stratégie de base, calibrés pour 6 paquets / S17 / DAS.</div>
+      <div class="insurance-callout">
+        <span class="ic-icon">🛡️</span>
+        <div><strong>Assurance</strong> — quand le croupier montre un As, il te propose l'assurance. Ne la prends <em>que</em> si le True Count est ≥ +3. En dessous, refuse toujours.</div>
+      </div>
       <table class="dev" id="table-deviations"></table>
-      <div class="info-note">TC ≥ seuil : applique l'action indiquée au lieu de la stratégie de base. TC ≤ seuil (valeurs négatives) : reviens à Tirer même si la stratégie de base dit Rester. Les deux séparations de dix (10,10 vs 5 et vs 6) sont incluses mais restent une main très visible à la table — beaucoup de compteurs les retirent par prudence ("Sweet 16"). Les seuils se décalent d'1 à 2 points en H17 ou avec un nombre de paquets différent de 6.</div>
+      <div class="info-note">La colonne <strong>TC</strong> indique le seuil : un chiffre positif = applique l'action dès que le TC monte à cette valeur ; un chiffre négatif = applique-la quand le TC descend à cette valeur (sinon reste sur la stratégie de base). Les deux séparations de dix (10,10 vs 5 et vs 6) sont incluses mais restent très visibles à la table — beaucoup de compteurs les retirent par prudence ("Sweet 16"). Les seuils se décalent d'1 à 2 points en H17 ou avec un nombre de paquets différent de 6.</div>
     </div>
   </div>
 
@@ -1363,26 +1410,62 @@ const speedMs = {1:2400,2:1600,3:1050,4:750,5:560};
 ctSpeed.addEventListener('input', ()=> ctSpeedVal.textContent = speedLabels[ctSpeed.value]);
 function currentSpeedMs(){ return speedMs[ctSpeed.value] || 1050; }
 
-// Difficulty levels — control how many cards run before you're asked the count.
+// Difficulty levels — control run length. In "flux" mode: cards between questions.
+// In "table" mode: number of dealt rounds between questions.
 const LEVELS = [
-  {name:'Débutant',     min:6,  max:12, desc:'~6–12 cartes avant chaque question'},
-  {name:'Intermédiaire',min:14, max:22, desc:'~14–22 cartes avant chaque question'},
-  {name:'Avancé',       min:26, max:40, desc:'~26–40 cartes avant chaque question'},
-  {name:'Expert',       min:45, max:70, desc:'~45–70 cartes avant chaque question'},
+  {name:'Débutant',     min:6,  max:12, rounds:1, desc:'~6–12 cartes avant chaque question'},
+  {name:'Intermédiaire',min:14, max:22, rounds:2, desc:'~14–22 cartes avant chaque question'},
+  {name:'Avancé',       min:26, max:40, rounds:3, desc:'~26–40 cartes avant chaque question'},
+  {name:'Expert',       min:45, max:70, rounds:5, desc:'~45–70 cartes avant chaque question'},
 ];
 let ctLevel = 0;
 const ctLevelSeg = document.getElementById('ct-level-seg');
 const ctLevelDesc = document.getElementById('ct-level-desc');
+
+// Game modes
+const CT_MODES = [
+  {id:'flux',  name:'Flux continu', desc:'Flux continu : une carte après l\'autre, empilée devant toi.'},
+  {id:'table', name:'Table',        desc:'Distribution à une vraie table ; on te demande le compte selon le niveau.'},
+];
+let ctMode = 'flux';
+const ctModeSeg = document.getElementById('ct-mode-seg');
+const ctModeDesc = document.getElementById('ct-mode-desc');
+const ctPlayersField = document.getElementById('ct-players-field');
+const ctPlayers = document.getElementById('ct-players');
+const ctPlayersVal = document.getElementById('ct-players-val');
+ctPlayers.addEventListener('input', ()=> ctPlayersVal.textContent = ctPlayers.value);
+
+function levelDesc(){
+  return ctMode==='table'
+    ? ('Question toutes les '+LEVELS[ctLevel].rounds+' donne'+(LEVELS[ctLevel].rounds>1?'s':''))
+    : LEVELS[ctLevel].desc;
+}
 function rebuildLevelSeg(){
   ctLevelSeg.innerHTML='';
   LEVELS.forEach((lv,i)=>{
     const b=document.createElement('button');
     b.textContent=lv.name;
     if(i===ctLevel) b.classList.add('sel');
-    b.addEventListener('click', ()=>{ ctLevel=i; ctLevelDesc.textContent=LEVELS[i].desc; rebuildLevelSeg(); });
+    b.addEventListener('click', ()=>{ ctLevel=i; ctLevelDesc.textContent=levelDesc(); rebuildLevelSeg(); });
     ctLevelSeg.appendChild(b);
   });
 }
+function rebuildModeSeg(){
+  ctModeSeg.innerHTML='';
+  CT_MODES.forEach(m=>{
+    const b=document.createElement('button');
+    b.textContent=m.name;
+    if(m.id===ctMode) b.classList.add('sel');
+    b.addEventListener('click', ()=>{
+      ctMode=m.id; ctModeDesc.textContent=m.desc;
+      ctPlayersField.style.display = ctMode==='table' ? 'flex' : 'none';
+      ctLevelDesc.textContent = levelDesc();
+      rebuildModeSeg();
+    });
+    ctModeSeg.appendChild(b);
+  });
+}
+rebuildModeSeg();
 rebuildLevelSeg();
 
 let countSession = null;
@@ -1402,12 +1485,18 @@ document.getElementById('btn-stop-count').addEventListener('click', stopCountSes
 let ctRunning = false;
 async function startCountSession(){
   const numDecks = parseInt(ctDecks.value,10);
-  countSession = {good:0, bad:0, shoe: buildShoe(numDecks), rc:0, totalCards:numDecks*52};
+  countSession = {good:0, bad:0, shoe: buildShoe(numDecks), rc:0, totalCards:numDecks*52, mode:ctMode};
   document.getElementById('count-setup').classList.add('hidden');
   document.getElementById('count-session').classList.remove('hidden');
+  // reset stage
+  document.getElementById('pile-zone').innerHTML='';
+  document.getElementById('ct-table').innerHTML='';
+  document.getElementById('count-stage').classList.toggle('table-mode', ctMode==='table');
+  document.getElementById('ct-table').classList.toggle('show', ctMode==='table');
+  document.getElementById('pile-zone').style.display = ctMode==='table' ? 'none' : 'block';
   renderCountStats();
   ctRunning = true;
-  runCountLoop();
+  if(ctMode==='table') runTableLoop(); else runFluxLoop();
 }
 function stopCountSession(){
   ctRunning = false;
@@ -1415,20 +1504,33 @@ function stopCountSession(){
   document.getElementById('count-setup').classList.remove('hidden');
 }
 
-function dealFlipCard(card){
-  const zone = document.getElementById('flash-card-zone');
-  zone.innerHTML='';
+function drawCountCard(){
+  if(countSession.shoe.length < 4){
+    countSession.shoe = buildShoe(parseInt(ctDecks.value,10));
+    countSession.rc = 0;
+  }
+  const card = countSession.shoe.pop();
+  countSession.rc += hiLoValue(card.rank);
+  return card;
+}
+
+// Build a flip card element. fromX/fromY set where it starts (relative to its resting spot).
+function makeFlipCard(card, fromX, fromY){
   const el = document.createElement('div');
-  el.className='deal-card animate';
+  el.className='cc';
+  if(fromX!==undefined) el.style.setProperty('--fromX', fromX+'px');
+  if(fromY!==undefined) el.style.setProperty('--fromY', fromY+'px');
   const red = isRed(card.suit) ? ' red' : '';
   el.innerHTML =
-    `<div class="face front${red}">
-       <div class="rank-top">${card.rank}</div>
-       <div class="suit-mid">${card.suit}</div>
-       <div class="rank-bot">${card.rank}</div>
-     </div>
-     <div class="face back"></div>`;
-  zone.appendChild(el);
+    `<div class="flip">
+       <div class="face front${red}">
+         <div class="rank-top">${card.rank}</div>
+         <div class="suit-mid">${card.suit}</div>
+         <div class="rank-bot">${card.rank}</div>
+       </div>
+       <div class="face back"></div>
+     </div>`;
+  return el;
 }
 
 function nextRunLength(){
@@ -1436,46 +1538,154 @@ function nextRunLength(){
   return lv.min + Math.floor(Math.random()*(lv.max - lv.min + 1));
 }
 
-async function runCountLoop(){
+async function waitSpeed(bar){
+  const speed = speedMs[ctSpeed.value] || 1050;
+  let elapsed=0; const tick=30;
+  if(bar){ bar.style.width='0%'; }
+  while(elapsed<speed && ctRunning){
+    await sleep(tick); elapsed+=tick;
+    if(bar) bar.style.width = Math.min(100,(elapsed/speed)*100)+'%';
+  }
+}
+
+/* ---------- FLUX MODE : smooth growing pile ---------- */
+async function runFluxLoop(){
   const bar = document.getElementById('ct-progress-bar');
+  const pile = document.getElementById('pile-zone');
   let sinceLastPrompt = 0;
   let target = nextRunLength();
+  const MAX_PILE = 7;
 
   while(ctRunning){
-    if(countSession.shoe.length < 4){
-      countSession.shoe = buildShoe(parseInt(ctDecks.value,10));
-      countSession.rc = 0;
-    }
-    const card = countSession.shoe.pop();
-    countSession.rc += hiLoValue(card.rank);
+    const card = drawCountCard();
+    // small natural offset so the pile looks stacked
+    const rot = (Math.random()*8-4).toFixed(1);
+    const ox = (Math.random()*10-5).toFixed(0);
+    const oy = (Math.random()*6-3).toFixed(0);
+    const el = makeFlipCard(card, -ox*1 + 6, -150); // starts up at the deck, slides down
+    el.style.transform = `translate(${ox}px, ${oy}px) rotate(${rot}deg)`;
+    pile.appendChild(el);
+    while(pile.children.length > MAX_PILE) pile.removeChild(pile.firstElementChild);
 
-    dealFlipCard(card);
-
-    const speed = currentSpeedMs(); // read live so slider changes take effect
-    let elapsed=0;
-    bar.style.width='0%';
-    const tickMs=30;
-    while(elapsed<speed && ctRunning){
-      await sleep(tickMs); elapsed+=tickMs;
-      bar.style.width = Math.min(100, (elapsed/speed)*100)+'%';
-    }
+    await waitSpeed(bar);
     if(!ctRunning) break;
 
     sinceLastPrompt++;
     if(sinceLastPrompt>=target){
-      sinceLastPrompt=0;
-      target = nextRunLength();
-      const actualRC = countSession.rc;
-      const guess = await askGuess();
-      if(guess===null) continue; // empty submit: skip scoring
-      const ok = guess === actualRC;
-      if(ok){ countSession.good++; } else { countSession.bad++; }
-      allTimeStats[ok?'good':'bad']++;
-      storeSet('counting-alltime', allTimeStats);
-      renderCountStats();
-      await showVerdict(ok, guess, actualRC);
+      sinceLastPrompt=0; target=nextRunLength();
+      await promptAndScore();
     }
   }
+}
+
+/* ---------- TABLE MODE : deal a round, then close cards in order ---------- */
+function layoutCountTable(nPlayers){
+  const tbl = document.getElementById('ct-table');
+  tbl.innerHTML='';
+  const spots = []; // {x,y} in %
+  // dealer centered near top
+  spots.dealer = {xPct:50, yPct:22};
+  const lbl = document.createElement('div');
+  lbl.className='ct-seat-label'; lbl.textContent='Croupier';
+  lbl.style.left='50%'; lbl.style.top='9%';
+  tbl.appendChild(lbl);
+  // players fanned along the bottom
+  for(let i=0;i<nPlayers;i++){
+    const t = nPlayers===1 ? 0.5 : i/(nPlayers-1);
+    const xPct = 14 + t*72;
+    const yPct = 60 + Math.sin(t*Math.PI)*10;
+    spots.push({xPct, yPct});
+    const pl = document.createElement('div');
+    pl.className='ct-seat-label';
+    pl.textContent='J'+(i+1);
+    pl.style.left=xPct+'%'; pl.style.top=(yPct-14)+'%';
+    tbl.appendChild(pl);
+  }
+  return spots;
+}
+
+async function dealCardToSpot(spot, card, idxInHand){
+  const tbl = document.getElementById('ct-table');
+  const rect = tbl.getBoundingClientRect();
+  const cardW = 52, cardH = 74;
+  const x = rect.width  * spot.xPct/100 - cardW/2 + idxInHand*16;
+  const y = rect.height * spot.yPct/100 - cardH/2;
+  // deck sits in the top-left corner in table mode
+  const deckX = 14 + 28 - cardW/2;
+  const deckY = 14 + 40 - cardH/2;
+  const el = makeFlipCard(card, deckX - x, deckY - y);
+  el.style.left = x+'px';
+  el.style.top = y+'px';
+  el.dataset.order = String(Date.now())+Math.random();
+  tbl.appendChild(el);
+  return el;
+}
+
+async function runTableLoop(){
+  const bar = document.getElementById('ct-progress-bar');
+  const nPlayers = parseInt(ctPlayers.value,10);
+  let roundsSincePrompt = 0;
+  const roundsTarget = LEVELS[ctLevel].rounds;
+
+  while(ctRunning){
+    const spots = layoutCountTable(nPlayers);
+    const dealt = []; // in deal order, for closing later
+
+    // initial 2 cards: players first then dealer, twice
+    for(let r=0;r<2;r++){
+      for(let i=0;i<nPlayers;i++){
+        if(!ctRunning) break;
+        const c = drawCountCard();
+        dealt.push(await dealCardToSpot(spots[i], c, r));
+        await sleep(Math.max(140, (speedMs[ctSpeed.value]||1050)*0.28));
+      }
+      if(!ctRunning) break;
+      const dc = drawCountCard();
+      dealt.push(await dealCardToSpot(spots.dealer, dc, r));
+      await sleep(Math.max(160, (speedMs[ctSpeed.value]||1050)*0.32));
+    }
+    if(!ctRunning) break;
+
+    // dealer draws a couple extra sometimes (adds variety to the count)
+    const extra = Math.floor(Math.random()*3);
+    for(let e=0;e<extra && ctRunning;e++){
+      const dc = drawCountCard();
+      dealt.push(await dealCardToSpot(spots.dealer, dc, 2+e));
+      await sleep(Math.max(150,(speedMs[ctSpeed.value]||1050)*0.3));
+    }
+
+    // let the finished round sit briefly
+    await waitSpeed(bar);
+    if(!ctRunning) break;
+
+    roundsSincePrompt++;
+    if(roundsSincePrompt>=roundsTarget){
+      roundsSincePrompt=0;
+      await promptAndScore();
+      if(!ctRunning) break;
+    }
+
+    // close the cards one by one, in the order they were dealt
+    for(const el of dealt){
+      if(!ctRunning) break;
+      el.classList.add('closing');
+      await sleep(90);
+    }
+    await sleep(220);
+    document.getElementById('ct-table').innerHTML='';
+  }
+}
+
+async function promptAndScore(){
+  const actualRC = countSession.rc;
+  const guess = await askGuess();
+  if(guess===null) return;
+  const ok = guess === actualRC;
+  if(ok){ countSession.good++; } else { countSession.bad++; }
+  allTimeStats[ok?'good':'bad']++;
+  storeSet('counting-alltime', allTimeStats);
+  renderCountStats();
+  await showVerdict(ok, guess, actualRC);
 }
 
 function askGuess(){
@@ -1543,15 +1753,14 @@ buildStratTable('table-pairs', PAIRS, k=>{
 
 function buildDeviationsTable(){
   const table = document.getElementById('table-deviations');
-  let html = '<thead><tr><th>Main</th><th>Croupier</th><th>Seuil TC</th><th>Action</th></tr></thead><tbody>';
+  let html = '<thead><tr><th>Main</th><th>Croupier</th><th>TC</th><th>Action</th></tr></thead><tbody>';
   const names = {H:'Tirer',S:'Rester',D:'Doubler',P:'Séparer'};
-  html += '<tr><td>Assurance</td><td>As</td><td>TC \u2265 '+INSURANCE_TC+'</td><td class="action-tag D">Prendre l\'assurance</td></tr>';
   for(const d of DEVIATIONS){
     const dealerLbl = d.dealer===11?'A':d.dealer;
-    html += `<tr><td>${d.player}</td><td>${dealerLbl}</td><td>TC ${d.dir} ${d.tc}</td><td class="action-tag ${d.action}">${names[d.action]}</td></tr>`;
+    html += `<tr><td>${d.player}</td><td>${dealerLbl}</td><td>${d.tc}</td><td class="action-tag ${d.action}">${names[d.action]}</td></tr>`;
   }
   for(const d of PAIR_DEVIATIONS){
-    html += `<tr><td>10,10</td><td>${d.dealer}</td><td>TC \u2265 ${d.tc}</td><td class="action-tag P">Séparer</td></tr>`;
+    html += `<tr><td>10,10</td><td>${d.dealer}</td><td>${d.tc}</td><td class="action-tag P">Séparer</td></tr>`;
   }
   html += '</tbody>';
   table.innerHTML = html;
