@@ -176,9 +176,9 @@ input[type=range]::-webkit-slider-thumb{
 .seat-msg.good{color:#a6e6b0;}
 .seat-msg.bad{color:#ffb4ab;}
 
-/* when the player splits, center the seat and keep all hands on screen */
-.seat.me.splitting{left:50% !important;top:60% !important;width:min(94vw,620px);z-index:6;}
-.seat.me.splitting .hand-cards{transform-origin:center top;flex-wrap:nowrap;}
+/* when the player splits, center the seat; hands stack vertically (set in JS) */
+.seat.me.splitting{left:50% !important;top:50% !important;width:min(90vw,520px);z-index:6;}
+.seat.me.splitting .hand-cards{flex-direction:column;}
 
 /* on-table decision score counter */
 .score-overlay{
@@ -259,7 +259,7 @@ input[type=range]::-webkit-slider-thumb{
 .cc{position:absolute;transform-style:preserve-3d;}
 .cc .flip{
   width:100%;height:100%;position:relative;transform-style:preserve-3d;
-  animation:cardIn .42s cubic-bezier(.25,.9,.3,1) both;
+  animation:cardIn .3s cubic-bezier(.25,.9,.3,1) both;
 }
 .cc.closing .flip{animation:cardOut .32s cubic-bezier(.4,0,.6,1) both;}
 .cc .face{
@@ -584,7 +584,7 @@ table.dev td.action-tag{font-weight:700;}
           <div class="value-line"><span id="ct-players-val">4</span> joueur(s) + croupier</div>
         </div>
         <div class="field">
-          <label>Niveau</label>
+          <label>Stu level</label>
           <div class="seg" id="ct-level-seg"></div>
           <div class="value-line" id="ct-level-desc">~6–12 cartes avant chaque question</div>
         </div>
@@ -609,7 +609,6 @@ table.dev td.action-tag{font-weight:700;}
         <div class="pile-zone" id="pile-zone"></div>
         <!-- Mode Table : positions des joueurs + croupier -->
         <div class="ct-table" id="ct-table"></div>
-        <div class="count-progress"><div class="bar" id="ct-progress-bar"></div></div>
         <div class="prompt-overlay" id="ct-prompt-overlay">
           <h3>Quel est le compte courant ?</h3>
           <div class="prompt-inputs">
@@ -735,7 +734,7 @@ function isPairHand(cards){
 
 /* ---- Basic strategy tables ---- */
 /* dealer index: 0..9 => up value 2..10, 10 => Ace */
-function dUpIdx(v){ return v===11 ? 10 : v-2; }
+function dUpIdx(v){ return v-2; } // 2->0 ... 10->8, As(11)->9
 
 // Hard totals 5-17 (18-21 always Stand)
 const HARD = {
@@ -976,8 +975,10 @@ function layoutSeats(){
     // Seat 1 sits on the right; higher seat numbers fan out to the left.
     const t = n===1 ? 0.5 : i/(n-1);
     const leftPct = n===1 ? 68 : (88 - t*76);
-    const arc = Math.sin((n===1?0.5:t)*Math.PI);
-    const topPct = 66 + arc*15;
+    // stagger heights in a zigzag so neighbouring seats never sit at the same
+    // level (prevents card overlap, especially during splits)
+    const zig = (i % 2 === 0) ? 0 : 16;
+    const topPct = 60 + zig;
     const div = document.createElement('div');
     div.className = 'seat'+(seat.isMe?' me':'');
     div.style.left = leftPct+'%';
@@ -1023,6 +1024,7 @@ function updateMetrics(){
 function renderCard(card, faceDown, animate){
   const div = document.createElement('div');
   div.className = 'card' + (faceDown?' back':'') + (card && isRed(card.suit) && !faceDown ? ' red':'') + (animate?' dealing':'');
+  div.dataset.key = faceDown ? 'back' : (card.rank+card.suit);
   if(!faceDown){
     div.innerHTML = `<div class="rank-top">${card.rank}</div><div class="suit-mid">${card.suit}</div><div class="rank-bot">${card.rank}</div>`;
   }
@@ -1031,20 +1033,18 @@ function renderCard(card, faceDown, animate){
 
 // Incrementally sync a set of cards into a container so that existing cards
 // are NOT re-created (which would re-trigger the deal animation and cause the
-// "jumping" glitch). Only genuinely new cards animate; face changes (hole-card
-// reveal) replace in place without a deal animation.
+// "jumping" glitch). Only genuinely new cards animate; a card whose identity
+// changed at a given index (e.g. after a split) is replaced without animation.
 function syncCards(container, cards, hideSecond){
   const existing = Array.from(container.children);
   cards.forEach((c,i)=>{
     const faceDown = !!(hideSecond && i===1);
+    const wantKey = faceDown ? 'back' : (c.rank+c.suit);
     const el = existing[i];
     if(!el){
       container.appendChild(renderCard(c, faceDown, true));
-    } else {
-      const isBack = el.classList.contains('back');
-      if(isBack !== faceDown){
-        container.replaceChild(renderCard(c, faceDown, false), el);
-      }
+    } else if(el.dataset.key !== wantKey){
+      container.replaceChild(renderCard(c, faceDown, false), el);
     }
   });
   while(container.children.length > cards.length){
@@ -1129,21 +1129,26 @@ function renderAll(){
     if(!cont) continue;
     cont.style.display='flex';
     cont.style.justifyContent='center';
-    cont.style.gap='8px';
-    // when the player splits, center the seat and scale hands down so everything fits
+    // when the player splits, stack the hands vertically (one above the other)
+    // and scale down so nothing overflows the screen
     const seatDiv = document.getElementById('seat-'+s.seatNo);
     if(s.isMe && seatDiv){
       if(s.hands.length>1){
         seatDiv.classList.add('splitting');
-        const scale = s.hands.length>=4 ? 0.5 : (s.hands.length===3 ? 0.62 : 0.78);
+        cont.style.flexDirection='column';
+        cont.style.alignItems='center';
+        cont.style.gap='6px';
+        const scale = s.hands.length>=4 ? 0.56 : (s.hands.length===3 ? 0.66 : 0.82);
         cont.style.transform = 'scale('+scale+')';
-        cont.style.transformOrigin = 'center top';
-        cont.style.gap = '4px';
+        cont.style.transformOrigin = 'center center';
       } else {
         seatDiv.classList.remove('splitting');
+        cont.style.flexDirection='row';
         cont.style.transform = '';
         cont.style.gap = '8px';
       }
+    } else {
+      cont.style.gap = '8px';
     }
     // ensure one wrap per hand
     while(cont.children.length < s.hands.length){
@@ -1406,7 +1411,7 @@ ctDecks.addEventListener('input', ()=> ctDecksVal.textContent = ctDecks.value);
 const ctSpeed = document.getElementById('ct-speed');
 const ctSpeedVal = document.getElementById('ct-speed-val');
 const speedLabels = {1:'Très lente',2:'Lente',3:'Normale',4:'Rapide',5:'Très rapide'};
-const speedMs = {1:2400,2:1600,3:1050,4:750,5:560};
+const speedMs = {1:2000,2:1300,3:850,4:500,5:330};
 ctSpeed.addEventListener('input', ()=> ctSpeedVal.textContent = speedLabels[ctSpeed.value]);
 function currentSpeedMs(){ return speedMs[ctSpeed.value] || 1050; }
 
@@ -1538,19 +1543,16 @@ function nextRunLength(){
   return lv.min + Math.floor(Math.random()*(lv.max - lv.min + 1));
 }
 
-async function waitSpeed(bar){
-  const speed = speedMs[ctSpeed.value] || 1050;
+async function waitSpeed(){
+  const speed = speedMs[ctSpeed.value] || 900;
   let elapsed=0; const tick=30;
-  if(bar){ bar.style.width='0%'; }
   while(elapsed<speed && ctRunning){
     await sleep(tick); elapsed+=tick;
-    if(bar) bar.style.width = Math.min(100,(elapsed/speed)*100)+'%';
   }
 }
 
 /* ---------- FLUX MODE : smooth growing pile ---------- */
 async function runFluxLoop(){
-  const bar = document.getElementById('ct-progress-bar');
   const pile = document.getElementById('pile-zone');
   let sinceLastPrompt = 0;
   let target = nextRunLength();
@@ -1567,13 +1569,13 @@ async function runFluxLoop(){
     pile.appendChild(el);
     while(pile.children.length > MAX_PILE) pile.removeChild(pile.firstElementChild);
 
-    await waitSpeed(bar);
+    await waitSpeed();
     if(!ctRunning) break;
 
     sinceLastPrompt++;
     if(sinceLastPrompt>=target){
       sinceLastPrompt=0; target=nextRunLength();
-      await promptAndScore();
+      try{ await promptAndScore(); }catch(e){ /* keep the loop alive */ }
     }
   }
 }
@@ -1622,7 +1624,6 @@ async function dealCardToSpot(spot, card, idxInHand){
 }
 
 async function runTableLoop(){
-  const bar = document.getElementById('ct-progress-bar');
   const nPlayers = parseInt(ctPlayers.value,10);
   let roundsSincePrompt = 0;
   const roundsTarget = LEVELS[ctLevel].rounds;
@@ -1655,13 +1656,13 @@ async function runTableLoop(){
     }
 
     // let the finished round sit briefly
-    await waitSpeed(bar);
+    await waitSpeed();
     if(!ctRunning) break;
 
     roundsSincePrompt++;
     if(roundsSincePrompt>=roundsTarget){
       roundsSincePrompt=0;
-      await promptAndScore();
+      try{ await promptAndScore(); }catch(e){ /* keep the loop alive */ }
       if(!ctRunning) break;
     }
 
