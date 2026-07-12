@@ -176,9 +176,16 @@ input[type=range]::-webkit-slider-thumb{
 .seat-msg.good{color:#a6e6b0;}
 .seat-msg.bad{color:#ffb4ab;}
 
-/* when the player splits, center the seat; hands stack vertically (set in JS) */
-.seat.me.splitting{left:50% !important;top:50% !important;width:min(90vw,520px);z-index:6;}
-.seat.me.splitting .hand-cards{flex-direction:column;}
+/* when a seat splits, its hands stack vertically at its OWN position.
+   Cards shrink so the pile stays compact and never covers the total below. */
+.seat.splitting{z-index:6;transform:translate(-50%,-100%) !important;}
+.hand-cards.stack{flex-direction:column !important;align-items:center;gap:5px;}
+.hand-cards.stack .card{width:48px;height:68px;font-size:13px;}
+.hand-cards.stack .card .suit-mid{font-size:20px;}
+.hand-cards.stack.s3 .card{width:42px;height:60px;font-size:12px;}
+.hand-cards.stack.s3 .card .suit-mid{font-size:17px;}
+.hand-cards.stack.s4 .card{width:37px;height:53px;font-size:11px;}
+.hand-cards.stack.s4 .card .suit-mid{font-size:15px;}
 
 /* on-table decision score counter */
 .score-overlay{
@@ -324,12 +331,22 @@ input[type=range]::-webkit-slider-thumb{
 .verdict-overlay.good .verdict-sub{color:#a6e6b0;}
 .verdict-overlay.bad .verdict-sub{color:#ffc2ba;}
 .prompt-overlay h3{margin:0;color:var(--gold-light);font-size:18px;}
-.prompt-inputs{display:flex;gap:12px;}
+.prompt-inputs{display:flex;gap:10px;align-items:flex-end;}
 .prompt-inputs input{
-  width:88px;text-align:center;font-size:20px;padding:10px;border-radius:9px;border:1px solid rgba(230,204,133,.4);
+  width:96px;text-align:center;font-size:24px;padding:10px;border-radius:9px;border:1px solid rgba(230,204,133,.4);
   background:rgba(255,255,255,.06);color:var(--cream);font-family:'JetBrains Mono',monospace;
 }
 .prompt-inputs label{display:block;font-size:10.5px;text-transform:uppercase;opacity:.55;margin-bottom:6px;text-align:center;letter-spacing:.06em;}
+.rc-step{
+  width:46px;height:46px;border-radius:10px;border:1px solid rgba(230,204,133,.4);
+  background:rgba(255,255,255,.06);color:var(--gold-light);font-size:24px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;line-height:1;
+}
+.rc-step:active{background:rgba(230,204,133,.2);}
+.rc-sign{
+  background:transparent;border:1px solid rgba(230,204,133,.35);color:var(--gold-light);
+  border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600;
+}
 .result-flash{position:absolute;top:14px;left:50%;transform:translateX(-50%);
   padding:6px 16px;border-radius:20px;font-weight:700;font-size:13px;opacity:0;transition:opacity .2s;}
 .result-flash.show{opacity:1;}
@@ -612,8 +629,14 @@ table.dev td.action-tag{font-weight:700;}
         <div class="prompt-overlay" id="ct-prompt-overlay">
           <h3>Quel est le compte courant ?</h3>
           <div class="prompt-inputs">
-            <div><label>Running Count</label><input type="number" id="ct-input-rc" inputmode="numeric"></div>
+            <button type="button" class="rc-step" id="ct-minus">−</button>
+            <div>
+              <label>Running Count</label>
+              <input type="text" id="ct-input-rc" inputmode="numeric" pattern="-?[0-9]*" value="0">
+            </div>
+            <button type="button" class="rc-step" id="ct-plus">+</button>
           </div>
+          <button type="button" class="rc-sign" id="ct-sign">Inverser le signe (±)</button>
           <button class="btn btn-gold" id="ct-submit-guess">Valider</button>
         </div>
         <div class="verdict-overlay" id="ct-verdict-overlay">
@@ -1129,26 +1152,21 @@ function renderAll(){
     if(!cont) continue;
     cont.style.display='flex';
     cont.style.justifyContent='center';
-    // when the player splits, stack the hands vertically (one above the other)
-    // and scale down so nothing overflows the screen
+    // when a seat splits, stack its hands vertically at its own position and
+    // shrink the cards (class-based, real size) so the total below stays clear
     const seatDiv = document.getElementById('seat-'+s.seatNo);
-    if(s.isMe && seatDiv){
-      if(s.hands.length>1){
-        seatDiv.classList.add('splitting');
-        cont.style.flexDirection='column';
-        cont.style.alignItems='center';
-        cont.style.gap='6px';
-        const scale = s.hands.length>=4 ? 0.56 : (s.hands.length===3 ? 0.66 : 0.82);
-        cont.style.transform = 'scale('+scale+')';
-        cont.style.transformOrigin = 'center center';
-      } else {
-        seatDiv.classList.remove('splitting');
-        cont.style.flexDirection='row';
-        cont.style.transform = '';
-        cont.style.gap = '8px';
-      }
+    const splitting = s.hands.length>1;
+    if(seatDiv) seatDiv.classList.toggle('splitting', splitting);
+    cont.classList.remove('stack','s3','s4');
+    cont.style.transform='';
+    if(splitting){
+      cont.classList.add('stack');
+      if(s.hands.length===3) cont.classList.add('s3');
+      if(s.hands.length>=4) cont.classList.add('s4');
+      cont.style.gap='5px';
     } else {
-      cont.style.gap = '8px';
+      cont.style.flexDirection='row';
+      cont.style.gap='8px';
     }
     // ensure one wrap per hand
     while(cont.children.length < s.hands.length){
@@ -1693,21 +1711,40 @@ function askGuess(){
   return new Promise(resolve=>{
     const overlay = document.getElementById('ct-prompt-overlay');
     const rcInput = document.getElementById('ct-input-rc');
-    rcInput.value='';
+    const minusBtn = document.getElementById('ct-minus');
+    const plusBtn = document.getElementById('ct-plus');
+    const signBtn = document.getElementById('ct-sign');
+    rcInput.value='0';
     overlay.classList.add('show');
-    setTimeout(()=>rcInput.focus(), 30);
+    setTimeout(()=>{ rcInput.focus(); rcInput.select(); }, 30);
     const submit = document.getElementById('ct-submit-guess');
+
+    function curVal(){ const v=parseInt(rcInput.value,10); return isNaN(v)?0:v; }
+    function step(delta){ rcInput.value = String(curVal()+delta); }
+    function toggleSign(){ rcInput.value = String(-curVal()); }
+    function onMinus(){ step(-1); }
+    function onPlus(){ step(1); }
+
+    function cleanup(){
+      submit.removeEventListener('click', handler);
+      rcInput.removeEventListener('keydown', keyHandler);
+      minusBtn.removeEventListener('click', onMinus);
+      plusBtn.removeEventListener('click', onPlus);
+      signBtn.removeEventListener('click', toggleSign);
+    }
     function handler(){
       const rc = parseInt(rcInput.value,10);
       if(isNaN(rc)) { rcInput.focus(); return; } // require a value
       overlay.classList.remove('show');
-      submit.removeEventListener('click', handler);
-      rcInput.removeEventListener('keydown', keyHandler);
+      cleanup();
       resolve(rc);
     }
     function keyHandler(e){ if(e.key==='Enter') handler(); }
     submit.addEventListener('click', handler);
     rcInput.addEventListener('keydown', keyHandler);
+    minusBtn.addEventListener('click', onMinus);
+    plusBtn.addEventListener('click', onPlus);
+    signBtn.addEventListener('click', toggleSign);
   });
 }
 
