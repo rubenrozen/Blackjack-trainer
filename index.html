@@ -173,9 +173,16 @@ input[type=range]::-webkit-slider-thumb{
   box-shadow:var(--shadow-deep), inset 0 0 60px rgba(0,0,0,.35);
   min-height:520px;
   padding:20px;
-  overflow:visible;
+  overflow:hidden;
   transition:background .6s ease, border-color .4s ease;
 }
+.felt-illus{
+  position:absolute;inset:0;pointer-events:none;
+  opacity:.28;mix-blend-mode:soft-light;
+  transition:opacity .5s ease;
+  border-radius:inherit;overflow:hidden;
+}
+.felt-illus svg{width:100%;height:100%;display:block;}
 .felt::before{
   content:'UNGAR\'S ACES • PAIE 3:2 • ASSURANCE 2:1';
   position:absolute;top:41%;left:50%;transform:translateX(-50%);
@@ -188,41 +195,14 @@ input[type=range]::-webkit-slider-thumb{
 .hand-cards.stacked .card{margin-left:-20px;}
 .hand-cards.stacked .card:first-child{margin-left:0;}
 .card{
-  width:66px;height:94px;border-radius:9px;
-  background:#fdf8f0;
-  box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1.5px rgba(0,0,0,.12), inset 0 0 0 3px rgba(0,0,0,.04);
-  display:flex;flex-direction:column;justify-content:space-between;
-  padding:4px 5px;font-weight:800;font-size:16px;color:#1a1208;
+  width:66px;height:94px;border-radius:8px;
+  background:#fbf7ec;
+  box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.2);
   position:relative;overflow:hidden;
 }
 .card.dealing{animation:dealCard .26s ease;}
-.card.red{color:#c0261a;}
-/* coin haut gauche */
-.card .corner{display:flex;flex-direction:column;align-items:center;line-height:1;gap:0px;}
-.card .corner .r{font-size:15px;font-weight:900;letter-spacing:-.02em;}
-.card .corner .s{font-size:12px;line-height:1;}
-.card .corner-bot{transform:rotate(180deg);align-self:flex-end;}
-/* grand pip central */
-.card .pip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;opacity:.88;}
-/* filet intérieur décoratif */
-.card::before{
-  content:'';position:absolute;inset:4px;border-radius:5px;
-  border:1px solid rgba(0,0,0,.08);pointer-events:none;
-}
-/* DOS — motif classique damier diagonal */
-.card.back{
-  background:#fdf8f0;
-  border:2px solid var(--gold);
-}
-.card.back::before{display:none;}
-.card.back::after{
-  content:'';position:absolute;inset:5px;border-radius:4px;
-  background:
-    repeating-linear-gradient(45deg,  #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px),
-    repeating-linear-gradient(-45deg, #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px);
-  background-color:#1e3c7a;
-  border:1.5px solid rgba(201,162,75,.6);
-}
+.card svg{width:100%;height:100%;display:block;}
+.card.back{background:#f5efe0;}
 @keyframes dealCard{from{opacity:0;transform:translateY(-18px) scale(.85);}to{opacity:1;transform:none;}}
 .hand-total{font-size:12px;margin-top:6px;font-family:'JetBrains Mono',monospace;color:var(--gold-light);opacity:.9;}
 
@@ -246,12 +226,9 @@ input[type=range]::-webkit-slider-thumb{
    Cards shrink so the pile stays compact and never covers the total below. */
 .seat.splitting{z-index:6;transform:translate(-50%,-100%) !important;}
 .hand-cards.stack{flex-direction:column !important;align-items:center;gap:5px;}
-.hand-cards.stack .card{width:48px;height:68px;font-size:13px;}
-.hand-cards.stack .card .pip{font-size:20px;}
-.hand-cards.stack.s3 .card{width:42px;height:60px;font-size:12px;}
-.hand-cards.stack.s3 .card .pip{font-size:17px;}
-.hand-cards.stack.s4 .card{width:37px;height:53px;font-size:11px;}
-.hand-cards.stack.s4 .card .pip{font-size:15px;}
+.hand-cards.stack .card{width:48px;height:68px;}
+.hand-cards.stack.s3 .card{width:42px;height:60px;}
+.hand-cards.stack.s4 .card{width:37px;height:53px;}
 
 /* on-table decision score counter */
 .score-overlay{
@@ -320,7 +297,9 @@ input[type=range]::-webkit-slider-thumb{
   padding:20px 16px 28px;border-top:1px solid rgba(230,204,133,.2);
 }
 .theme-modal h3{font-family:'Fraunces',serif;margin:0 0 14px;color:var(--gold-light);font-size:17px;}
-.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;}
+.theme-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin:6px 0 8px;font-weight:600;}
+.theme-modal .theme-section-title:first-of-type{margin-top:0;}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-bottom:14px;}
 .theme-swatch{
   border-radius:12px;aspect-ratio:1/0.65;cursor:pointer;position:relative;overflow:hidden;
   border:2px solid transparent;transition:border-color .15s,transform .1s;
@@ -345,10 +324,12 @@ input[type=range]::-webkit-slider-thumb{
 .count-stage.table-mode .deck-visual{top:14px;left:14px;transform:none;width:56px;height:80px;}
 .count-stage.table-mode .deck-label{display:none;}
 .deck-card{
-  position:absolute;inset:0;border-radius:11px;border:2px solid var(--gold);
-  background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
+  position:absolute;inset:0;border-radius:8px;
+  background:#f5efe0;
   box-shadow:0 3px 8px rgba(0,0,0,.4);
+  overflow:hidden;
 }
+.deck-card svg{width:100%;height:100%;display:block;}
 .deck-card:nth-child(1){transform:translate(-3px,-3px);}
 .deck-card:nth-child(2){transform:translate(-1.5px,-1.5px);}
 .deck-card:nth-child(4){transform:translate(3px,3px);}
@@ -365,30 +346,12 @@ input[type=range]::-webkit-slider-thumb{
 }
 .cc.closing .flip{animation:cardOut .32s cubic-bezier(.4,0,.6,1) both;}
 .cc .face{
-  position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;
-  display:flex;flex-direction:column;justify-content:space-between;padding:5px 6px;
-  font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.4);overflow:hidden;
+  position:absolute;inset:0;border-radius:8px;backface-visibility:hidden;
+  overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.4);
 }
-.cc .face.front{background:#fdf8f0;color:#1a1208;}
-.cc .face.front.red{color:#c0261a;}
-.cc .face.front::before{content:'';position:absolute;inset:3px;border-radius:4px;border:1px solid rgba(0,0,0,.07);pointer-events:none;}
-.cc .face.back{
-  transform:rotateY(180deg);border:2px solid var(--gold);
-  background:#fdf8f0;
-}
-.cc .face.back::after{
-  content:'';position:absolute;inset:5px;border-radius:4px;
-  background:
-    repeating-linear-gradient(45deg,  #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px),
-    repeating-linear-gradient(-45deg, #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px);
-  background-color:#1e3c7a;
-  border:1.5px solid rgba(201,162,75,.6);
-}
-.cc .corner{display:flex;flex-direction:column;align-items:center;line-height:1;}
-.cc .corner .r{font-size:14px;font-weight:900;}
-.cc .corner .s{font-size:11px;}
-.cc .corner-bot{transform:rotate(180deg);align-self:flex-end;}
-.cc .pip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.cc .face.front{background:#fbf7ec;}
+.cc .face.back{transform:rotateY(180deg);background:#f5efe0;}
+.cc .face svg{width:100%;height:100%;display:block;}
 /* smooth continuous deal: slides down from the deck while flipping face-up, eases to rest, stays */
 @keyframes cardIn{
   0%   {transform:translate(var(--fromX,0), var(--fromY,-140px)) scale(.82) rotateY(180deg);opacity:0;}
@@ -404,18 +367,12 @@ input[type=range]::-webkit-slider-thumb{
 /* ---- Flux mode: a growing pile ---- */
 .pile-zone{position:absolute;top:170px;left:50%;transform:translateX(-50%);width:118px;height:168px;}
 .pile-zone .cc{width:118px;height:168px;inset:0;}
-.pile-zone .cc .pip{font-size:56px;}
-.pile-zone .cc .face{font-size:28px;}
 
 /* ---- Table mode ---- */
 .ct-table{position:absolute;inset:0;display:none;}
 .ct-table.show{display:block;}
 .ct-seat-label{position:absolute;font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.5;color:var(--cream);white-space:nowrap;transform:translateX(-50%);}
 .ct-table .cc{width:52px;height:74px;}
-.ct-table .cc .pip{font-size:22px;}
-.ct-table .cc .face{font-size:12px;border-radius:7px;padding:3px 4px;}
-.ct-table .cc .corner .r{font-size:12px;}
-.ct-table .cc .corner .s{font-size:10px;}
 
 .count-progress{position:absolute;bottom:14px;left:14px;right:14px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
 .count-progress .bar{height:100%;background:var(--gold);width:0%;transition:width .1s linear;}
@@ -531,8 +488,7 @@ table.dev td.action-tag{font-weight:700;}
   .dealer-zone{top:3%;width:auto;}
   .dealer-label{font-size:10px;margin-bottom:3px;}
 
-  .card{width:60px;height:85px;font-size:16px;border-radius:8px;padding:5px 6px;}
-  .card .pip{font-size:26px;}
+  .card{width:60px;height:85px;border-radius:8px;}
   .hand-cards{min-height:88px;}
   .hand-cards.stacked .card{margin-left:-16px;}
 
@@ -667,6 +623,7 @@ table.dev td.action-tag{font-weight:700;}
 
     <div class="table-wrap hidden" id="table-panel">
       <div class="felt">
+        <div class="felt-illus" id="felt-illus"></div>
         <div class="metrics-rail" id="metrics-rail">
           <div class="metric-chip">
             <div class="m-label">Paquets</div>
@@ -719,8 +676,11 @@ table.dev td.action-tag{font-weight:700;}
   <!-- ============ MODAL AMBIANCE ============ -->
   <div class="theme-modal-overlay" id="theme-modal-overlay">
     <div class="theme-modal">
-      <h3>Choisir une ambiance</h3>
+      <h3>Ambiance de la table</h3>
+      <div class="theme-section-title">Couleur du tapis</div>
       <div class="theme-grid" id="theme-grid"></div>
+      <div class="theme-section-title">Illustration de fond</div>
+      <div class="theme-grid" id="illus-grid"></div>
       <button class="theme-modal-close" id="theme-modal-close">Fermer</button>
     </div>
   </div>
@@ -868,6 +828,153 @@ const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
 function rankValue(r){ if(r==='A') return 11; if(['J','Q','K'].includes(r)) return 10; return parseInt(r,10); }
 function hiLoValue(r){ if(['2','3','4','5','6'].includes(r)) return 1; if(['7','8','9'].includes(r)) return 0; return -1; }
 function isRed(s){ return s==='♥'||s==='♦'; }
+
+/* ============================================================
+   BEAUTIFUL SVG CARDS
+   viewBox 100x140. All cards drawn as inline SVG so they scale
+   crisply at any size and look consistent across the app.
+   ============================================================ */
+const SUIT_PATHS = {
+  '♠': 'M50 25 C58 40 78 52 78 72 C78 86 68 94 58 92 C56 92 54 91 52 90 L56 108 L44 108 L48 90 C46 91 44 92 42 92 C32 94 22 86 22 72 C22 52 42 40 50 25 Z',
+  '♥': 'M50 108 C50 108 20 88 20 62 C20 50 28 42 38 42 C44 42 48 45 50 50 C52 45 56 42 62 42 C72 42 80 50 80 62 C80 88 50 108 50 108 Z',
+  '♦': 'M50 22 L78 65 L50 108 L22 65 Z',
+  '♣': 'M50 22 C58 22 64 28 64 36 C64 40 62 43 60 46 C64 42 68 40 72 40 C80 40 86 46 86 54 C86 62 80 68 72 68 C68 68 64 66 60 63 C61 66 62 69 62 72 L64 92 L36 92 L38 72 C38 69 39 66 40 63 C36 66 32 68 28 68 C20 68 14 62 14 54 C14 46 20 40 28 40 C32 40 36 42 40 46 C38 43 36 40 36 36 C36 28 42 22 50 22 Z',
+};
+const SUIT_COLOR = {'♠':'#0a0806','♣':'#0a0806','♥':'#c0261a','♦':'#c0261a'};
+
+// Pip positions for number cards, in a 100x140 grid (x, y coords, some flipped 180°)
+const PIP_LAYOUTS = {
+  '2': [[50,42,0],[50,98,1]],
+  '3': [[50,42,0],[50,70,0],[50,98,1]],
+  '4': [[32,42,0],[68,42,0],[32,98,1],[68,98,1]],
+  '5': [[32,42,0],[68,42,0],[50,70,0],[32,98,1],[68,98,1]],
+  '6': [[32,42,0],[68,42,0],[32,70,0],[68,70,0],[32,98,1],[68,98,1]],
+  '7': [[32,42,0],[68,42,0],[50,56,0],[32,70,0],[68,70,0],[32,98,1],[68,98,1]],
+  '8': [[32,42,0],[68,42,0],[50,56,0],[32,70,0],[68,70,0],[50,84,1],[32,98,1],[68,98,1]],
+  '9': [[32,40,0],[68,40,0],[32,58,0],[68,58,0],[50,70,0],[32,82,1],[68,82,1],[32,100,1],[68,100,1]],
+  '10':[[32,38,0],[68,38,0],[50,52,0],[32,66,0],[68,66,0],[32,74,1],[68,74,1],[50,88,1],[32,102,1],[68,102,1]],
+};
+
+function pipMini(suit, x, y, flip){
+  const color = SUIT_COLOR[suit];
+  // small suit ~ 26x26 centered on (x,y)
+  const scale = 0.24;
+  const tx = x - 50*scale;
+  const ty = y - 65*scale;
+  const rot = flip ? `rotate(180 ${x} ${y})` : '';
+  return `<g transform="${rot} translate(${tx} ${ty}) scale(${scale})"><path d="${SUIT_PATHS[suit]}" fill="${color}"/></g>`;
+}
+
+function cornerBlock(rank, suit, x, y, flip){
+  const color = SUIT_COLOR[suit];
+  const rankText = rank==='10' ? '10' : rank;
+  const rot = flip ? `rotate(180 ${x} ${y})` : '';
+  // small suit under rank
+  const sx = x, sy = y+13;
+  const scale = 0.12;
+  const tx = sx - 50*scale;
+  const ty = sy - 65*scale;
+  return `<g transform="${rot}">
+    <text x="${x}" y="${y}" text-anchor="middle" font-family="Fraunces, serif" font-size="16" font-weight="700" fill="${color}">${rankText}</text>
+    <g transform="translate(${tx} ${ty}) scale(${scale})"><path d="${SUIT_PATHS[suit]}" fill="${color}"/></g>
+  </g>`;
+}
+
+// Stylized court cards (J, Q, K) — decorative medallion + monogram
+function courtFace(rank, suit){
+  const color = SUIT_COLOR[suit];
+  const isRed = color==='#c0261a';
+  const accent = isRed ? '#8a1a13' : '#3a2f22';
+  const gold = '#c9a24b';
+  const bg = isRed ? '#fceee9' : '#f0ecdf';
+  return `
+    <!-- decorative medallion frame -->
+    <rect x="22" y="30" width="56" height="80" rx="4" fill="${bg}" stroke="${accent}" stroke-width="1.2"/>
+    <!-- fleur ornaments at corners of frame -->
+    <g fill="${gold}">
+      <circle cx="26" cy="34" r="2"/><circle cx="74" cy="34" r="2"/>
+      <circle cx="26" cy="106" r="2"/><circle cx="74" cy="106" r="2"/>
+    </g>
+    <!-- ornamental scrollwork -->
+    <g stroke="${accent}" stroke-width=".7" fill="none" opacity=".7">
+      <path d="M30 44 Q40 40 50 46 Q60 40 70 44"/>
+      <path d="M30 96 Q40 100 50 94 Q60 100 70 96"/>
+      <path d="M32 60 Q28 70 32 80"/>
+      <path d="M68 60 Q72 70 68 80"/>
+    </g>
+    <!-- monogram medallion in the middle -->
+    <circle cx="50" cy="70" r="16" fill="${bg}" stroke="${gold}" stroke-width="1.4"/>
+    <circle cx="50" cy="70" r="13" fill="none" stroke="${accent}" stroke-width=".6"/>
+    <text x="50" y="77" text-anchor="middle" font-family="Fraunces, serif" font-size="22" font-weight="700" font-style="italic" fill="${color}">${rank}</text>
+    <!-- suit accents around monogram -->
+    ${pipMini(suit, 50, 45)}
+    ${pipMini(suit, 50, 95, 1)}
+  `;
+}
+
+function aceFace(suit){
+  const color = SUIT_COLOR[suit];
+  const gold = '#c9a24b';
+  // Big ornate suit in the middle with radiating flourish
+  return `
+    <g stroke="${gold}" stroke-width=".6" fill="none" opacity=".6">
+      <circle cx="50" cy="70" r="28"/>
+      <path d="M22 70 Q35 55 50 55 Q65 55 78 70"/>
+      <path d="M22 70 Q35 85 50 85 Q65 85 78 70"/>
+    </g>
+    <g transform="translate(20 30) scale(0.6)"><path d="${SUIT_PATHS[suit]}" fill="${color}"/></g>
+  `;
+}
+
+function cardSVG(card){
+  const {rank, suit} = card;
+  const color = SUIT_COLOR[suit];
+  let body = '';
+  if(rank==='A'){
+    body = aceFace(suit);
+  } else if(rank==='J' || rank==='Q' || rank==='K'){
+    body = courtFace(rank, suit);
+  } else {
+    // number card pip layout
+    body = PIP_LAYOUTS[rank].map(([x,y,flip])=> pipMini(suit, x, y, flip)).join('');
+  }
+  return `<svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="98" height="138" rx="8" fill="#fbf7ec" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>
+    <rect x="4" y="4" width="92" height="132" rx="6" fill="none" stroke="rgba(0,0,0,.06)"/>
+    ${cornerBlock(rank, suit, 11, 18, 0)}
+    ${cornerBlock(rank, suit, 89, 122, 1)}
+    ${body}
+  </svg>`;
+}
+
+function cardBackSVG(){
+  // Classic Bicycle-style back : bordered field with diamond lattice and rosette
+  return `<svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="lat" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="8" height="8" fill="#1e3c7a"/>
+        <path d="M0 4 L8 4 M4 0 L4 8" stroke="#0f2050" stroke-width=".8"/>
+        <circle cx="4" cy="4" r="1" fill="#c9a24b"/>
+      </pattern>
+      <radialGradient id="glow" cx="0.5" cy="0.5" r="0.6">
+        <stop offset="0" stop-color="#2a5aa0"/><stop offset="1" stop-color="#0f2050"/>
+      </radialGradient>
+    </defs>
+    <rect x="1" y="1" width="98" height="138" rx="8" fill="#fbf7ec"/>
+    <rect x="4" y="4" width="92" height="132" rx="6" fill="url(#lat)"/>
+    <rect x="4" y="4" width="92" height="132" rx="6" fill="none" stroke="#c9a24b" stroke-width="1.4"/>
+    <rect x="7" y="7" width="86" height="126" rx="4" fill="none" stroke="#c9a24b" stroke-width=".5" opacity=".7"/>
+    <!-- center rosette -->
+    <g transform="translate(50 70)">
+      <circle r="22" fill="url(#glow)" stroke="#c9a24b" stroke-width="1.3"/>
+      <circle r="16" fill="none" stroke="#c9a24b" stroke-width=".6" opacity=".7"/>
+      <g stroke="#c9a24b" stroke-width=".7" fill="none">
+        <path d="M0 -18 L4 -4 L18 0 L4 4 L0 18 L-4 4 L-18 0 L-4 -4 Z" fill="#c9a24b" opacity=".85"/>
+        <circle r="5" fill="#0f2050"/>
+      </g>
+    </g>
+  </svg>`;
+}
 
 function buildShoe(numDecks){
   const shoe=[];
@@ -1213,14 +1320,9 @@ function updateMetrics(){
 
 function renderCard(card, faceDown, animate){
   const div = document.createElement('div');
-  div.className = 'card' + (faceDown?' back':'') + (card && isRed(card.suit) && !faceDown ? ' red':'') + (animate?' dealing':'');
+  div.className = 'card' + (faceDown?' back':'') + (animate?' dealing':'');
   div.dataset.key = faceDown ? 'back' : (card.rank+card.suit);
-  if(!faceDown){
-    div.innerHTML = `
-      <div class="corner"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>
-      <div class="pip">${card.suit}</div>
-      <div class="corner corner-bot"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>`;
-  }
+  div.innerHTML = faceDown ? cardBackSVG() : cardSVG(card);
   return div;
 }
 
@@ -1570,6 +1672,225 @@ const TABLE_THEMES = [
 ];
 
 let currentTheme = storeGet('table-theme') || 'casino';
+let currentIllus = storeGet('table-illus') || 'none';
+
+/* ============================================================
+   ILLUSTRATIONS DE FOND (10 SVG stylisés + option aucune)
+   ============================================================ */
+const ILLUS = [
+  { id:'none', label:'Aucune', svg:'' },
+  {
+    id:'palms', label:'Palmiers Vegas',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" stroke-width="1.5" fill="none" opacity=".9">
+        <path d="M80 380 L82 200"/><path d="M320 380 L318 220"/>
+        <g transform="translate(82 200)">
+          ${[0,45,90,135,180,225,270,315].map(a=>`<path transform="rotate(${a})" d="M0 0 Q30 -8 55 -3 Q45 -18 60 -32 Q30 -30 0 0"/>`).join('')}
+        </g>
+        <g transform="translate(318 220)">
+          ${[20,65,110,155,200,245,290,335].map(a=>`<path transform="rotate(${a})" d="M0 0 Q28 -6 50 -1 Q42 -16 55 -28 Q28 -26 0 0"/>`).join('')}
+        </g>
+      </g>
+      <g stroke="#fff" stroke-width="1" fill="none" opacity=".5">
+        <path d="M0 380 Q200 375 400 380"/>
+      </g>
+    </svg>`
+  },
+  {
+    id:'skyline', label:'Skyline',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#fff" opacity=".55">
+        <rect x="20"  y="280" width="30" height="100"/>
+        <rect x="55"  y="230" width="25" height="150"/>
+        <rect x="85"  y="200" width="35" height="180"/>
+        <rect x="125" y="260" width="20" height="120"/>
+        <rect x="150" y="180" width="40" height="200"/>
+        <polygon points="190,180 210,140 230,180 230,380 190,380"/>
+        <rect x="235" y="220" width="28" height="160"/>
+        <rect x="268" y="250" width="35" height="130"/>
+        <rect x="308" y="200" width="30" height="180"/>
+        <rect x="343" y="270" width="25" height="110"/>
+        <rect x="370" y="240" width="20" height="140"/>
+      </g>
+      <g fill="#ffe480" opacity=".8">
+        ${Array.from({length:60}).map((_,i)=>{
+          const x=20+Math.random()*370, y=200+Math.random()*170;
+          return `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="2" height="3"/>`;
+        }).join('')}
+      </g>
+    </svg>`
+  },
+  {
+    id:'dice', label:'Dés & jetons',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" fill="none" stroke-width="1.5" opacity=".55">
+        <!-- large dice -->
+        <g transform="translate(60 60) rotate(-12)">
+          <rect x="0" y="0" width="80" height="80" rx="10"/>
+          <circle cx="25" cy="25" r="5" fill="#fff"/>
+          <circle cx="55" cy="55" r="5" fill="#fff"/>
+          <circle cx="40" cy="40" r="5" fill="#fff"/>
+        </g>
+        <g transform="translate(240 220) rotate(18)">
+          <rect x="0" y="0" width="90" height="90" rx="10"/>
+          <circle cx="22" cy="22" r="5" fill="#fff"/>
+          <circle cx="68" cy="22" r="5" fill="#fff"/>
+          <circle cx="22" cy="68" r="5" fill="#fff"/>
+          <circle cx="68" cy="68" r="5" fill="#fff"/>
+          <circle cx="45" cy="45" r="5" fill="#fff"/>
+        </g>
+        <!-- chip stacks -->
+        <g transform="translate(310 60)">
+          ${[0,-8,-16,-24].map(y=>`<ellipse cx="0" cy="${y}" rx="30" ry="8"/>`).join('')}
+        </g>
+        <g transform="translate(70 320)">
+          ${[0,-8,-16].map(y=>`<ellipse cx="0" cy="${y}" rx="26" ry="7"/>`).join('')}
+        </g>
+      </g>
+    </svg>`
+  },
+  {
+    id:'yacht', label:'Yacht',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" fill="none" stroke-width="1.2" opacity=".6">
+        <!-- sea lines -->
+        ${Array.from({length:8}).map((_,i)=>`<path d="M0 ${240+i*20} Q100 ${235+i*20} 200 ${240+i*20} T400 ${240+i*20}"/>`).join('')}
+        <!-- yacht -->
+        <g transform="translate(120 200)">
+          <path d="M0 40 L160 40 L145 55 L15 55 Z" fill="#fff" opacity=".8"/>
+          <rect x="30" y="15" width="90" height="25" fill="#fff" opacity=".8"/>
+          <rect x="45" y="0" width="60" height="15" fill="#fff" opacity=".8"/>
+          <line x1="75" y1="-30" x2="75" y2="0"/>
+        </g>
+        <!-- sun -->
+        <circle cx="320" cy="120" r="30" fill="#fff" opacity=".7"/>
+      </g>
+    </svg>`
+  },
+  {
+    id:'moonparis', label:'Toits de Paris',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#fff" opacity=".55">
+        <circle cx="320" cy="90" r="26"/>
+      </g>
+      <g fill="#fff" opacity=".45">
+        <polygon points="0,280 40,240 80,280 80,380 0,380"/>
+        <polygon points="80,290 130,235 180,290 180,380 80,380"/>
+        <polygon points="180,270 220,220 260,270 260,380 180,380"/>
+        <polygon points="260,285 300,245 340,285 340,380 260,380"/>
+        <polygon points="340,275 375,240 400,275 400,380 340,380"/>
+        <!-- eiffel-esque silhouette -->
+        <polygon points="190,120 200,80 210,120 220,240 180,240" opacity=".85"/>
+        <rect x="196" y="120" width="8" height="120" opacity=".85"/>
+      </g>
+      <g fill="#fff" opacity=".7">
+        ${Array.from({length:40}).map(()=>{ const x=Math.random()*400, y=Math.random()*180; return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r=".8"/>`; }).join('')}
+      </g>
+    </svg>`
+  },
+  {
+    id:'cabin', label:'Cabanon feu de bois',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" fill="#fff" opacity=".55">
+        <!-- cabin -->
+        <polygon points="120,300 200,220 280,300"/>
+        <rect x="130" y="300" width="140" height="60"/>
+        <rect x="185" y="320" width="30" height="40" fill="#c9a24b" opacity=".8"/>
+        <rect x="145" y="315" width="20" height="20"/>
+        <rect x="240" y="315" width="20" height="20"/>
+        <!-- chimney with smoke -->
+        <rect x="250" y="240" width="15" height="30"/>
+        <path d="M256 235 Q265 220 258 205 Q252 190 260 175 Q268 160 262 145" fill="none" stroke-width="2"/>
+      </g>
+      <g fill="#fff" opacity=".35">
+        <!-- pine trees -->
+        <polygon points="40,300 60,240 80,300"/>
+        <polygon points="55,320 80,250 105,320"/>
+        <polygon points="320,310 340,250 360,310"/>
+        <polygon points="335,320 360,240 385,320"/>
+      </g>
+    </svg>`
+  },
+  {
+    id:'forest', label:'Sous-bois',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" fill="none" stroke-width="1.4" opacity=".55">
+        ${[30,90,170,250,330].map((x,i)=>`
+          <line x1="${x}" y1="380" x2="${x+(i%2?-3:3)}" y2="120"/>
+          <g transform="translate(${x} 380)">
+            ${[0,60,120,180,240].map(y=>`<path d="M-20 -${y+30} Q0 -${y+50} 20 -${y+30}" opacity=".8"/>`).join('')}
+          </g>
+        `).join('')}
+      </g>
+      <g fill="#fff" opacity=".18">
+        <!-- light beams -->
+        <polygon points="80,0 160,0 200,400 100,400"/>
+        <polygon points="240,0 320,0 300,400 220,400"/>
+      </g>
+    </svg>`
+  },
+  {
+    id:'desert', label:'Désert oasis',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#fff" opacity=".5">
+        <circle cx="200" cy="140" r="45"/>
+      </g>
+      <g stroke="#fff" fill="none" stroke-width="1.5" opacity=".6">
+        <!-- dunes -->
+        <path d="M0 320 Q100 280 200 320 T400 320" fill="#fff" fill-opacity=".2"/>
+        <path d="M0 360 Q100 330 200 360 T400 360" fill="#fff" fill-opacity=".25"/>
+        <!-- palm silhouettes -->
+        <g transform="translate(310 250)">
+          <path d="M0 90 L2 0"/>
+          ${[0,60,120,180,240,300].map(a=>`<path transform="rotate(${a})" d="M0 0 Q20 -6 38 -2 Q30 -14 42 -22 Q20 -20 0 0"/>`).join('')}
+        </g>
+        <g transform="translate(80 280)">
+          <path d="M0 70 L1 0"/>
+          ${[30,90,150,210,270,330].map(a=>`<path transform="rotate(${a})" d="M0 0 Q18 -5 32 -1 Q25 -12 36 -20 Q17 -18 0 0"/>`).join('')}
+        </g>
+      </g>
+    </svg>`
+  },
+  {
+    id:'mountains', label:'Sommets',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#fff" opacity=".5">
+        <polygon points="0,320 90,150 160,260 240,120 340,240 400,190 400,400 0,400"/>
+      </g>
+      <g fill="#fff" opacity=".35">
+        <polygon points="0,340 60,240 130,300 210,220 300,290 400,240 400,400 0,400"/>
+      </g>
+      <g fill="#fff" opacity=".85">
+        <polygon points="220,120 240,145 260,120 250,140 240,132 230,140"/>
+        <polygon points="90,150 100,168 110,150 105,164 100,158 95,164"/>
+      </g>
+      <g fill="#fff" opacity=".4">
+        <circle cx="330" cy="80" r="24"/>
+      </g>
+    </svg>`
+  },
+  {
+    id:'ocean', label:'Vagues',
+    svg:`<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" fill="none" stroke-width="1.3" opacity=".55">
+        ${Array.from({length:14}).map((_,i)=>{ const y=60+i*25; return `<path d="M-10 ${y} Q100 ${y-12} 210 ${y} T410 ${y}"/>`; }).join('')}
+      </g>
+      <g fill="#fff" opacity=".7">
+        <circle cx="330" cy="80" r="30"/>
+      </g>
+    </svg>`
+  },
+];
+
+function applyIllus(id){
+  currentIllus = id;
+  storeSet('table-illus', id);
+  const layer = document.getElementById('felt-illus');
+  const item = ILLUS.find(i=>i.id===id) || ILLUS[0];
+  if(!layer) return;
+  layer.innerHTML = item.svg || '';
+  document.querySelectorAll('#illus-grid .theme-swatch').forEach(s=>s.classList.toggle('active', s.dataset.illusId===id));
+}
 
 function applyTheme(id){
   const th = TABLE_THEMES.find(t=>t.id===id) || TABLE_THEMES[0];
@@ -1577,7 +1898,6 @@ function applyTheme(id){
   if(!felt) return;
   felt.style.setProperty('--table-bg', th.bg);
   felt.style.setProperty('--table-rail', th.rail);
-  // mise à jour du filigrane couleur
   const pseudo = document.createElement('style');
   pseudo.id='theme-pseudo';
   const old=document.getElementById('theme-pseudo');
@@ -1586,8 +1906,8 @@ function applyTheme(id){
   document.head.appendChild(pseudo);
   currentTheme = id;
   storeSet('table-theme', id);
-  // mettre à jour les swatches
-  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.toggle('active', s.dataset.themeId===id));
+  document.querySelectorAll('#theme-grid .theme-swatch').forEach(s=>s.classList.toggle('active', s.dataset.themeId===id));
+  applyIllus(currentIllus);
 }
 
 function buildThemeGrid(){
@@ -1604,6 +1924,20 @@ function buildThemeGrid(){
     sw.addEventListener('click', ()=>applyTheme(th.id));
     grid.appendChild(sw);
   });
+  // illustration grid
+  const igrid = document.getElementById('illus-grid');
+  igrid.innerHTML='';
+  const currentBg = (TABLE_THEMES.find(t=>t.id===currentTheme)||TABLE_THEMES[0]).bg;
+  ILLUS.forEach(il=>{
+    const sw=document.createElement('div');
+    sw.className='theme-swatch'+(il.id===currentIllus?' active':'');
+    sw.dataset.illusId=il.id;
+    sw.innerHTML=`<div style="position:absolute;inset:0;background:${currentBg};border-radius:10px;"></div>
+                  <div style="position:absolute;inset:0;opacity:.6;mix-blend-mode:soft-light;">${il.svg||''}</div>
+                  <div class="th-label">${il.label}</div>`;
+    sw.addEventListener('click', ()=>applyIllus(il.id));
+    igrid.appendChild(sw);
+  });
 }
 
 document.getElementById('table-theme-btn').addEventListener('click', ()=>{
@@ -1618,7 +1952,11 @@ document.getElementById('theme-modal-overlay').addEventListener('click', (e)=>{
 });
 
 // appliquer le thème sauvegardé au démarrage
-document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(()=>applyTheme(currentTheme), 50); });
+document.addEventListener('DOMContentLoaded', ()=>{
+  setTimeout(()=>applyTheme(currentTheme), 50);
+  // fill the shoe visuals with the same styled card back
+  document.querySelectorAll('.deck-card').forEach(dc => { dc.innerHTML = cardBackSVG(); });
+});
 
 function showFeedback(userAction, rec){
   const banner = document.getElementById('feedback-banner');
@@ -1820,15 +2158,10 @@ function makeFlipCard(card, fromX, fromY){
   el.className='cc';
   if(fromX!==undefined) el.style.setProperty('--fromX', fromX+'px');
   if(fromY!==undefined) el.style.setProperty('--fromY', fromY+'px');
-  const red = isRed(card.suit) ? ' red' : '';
   el.innerHTML =
     `<div class="flip">
-       <div class="face front${red}">
-         <div class="corner"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>
-         <div class="pip">${card.suit}</div>
-         <div class="corner corner-bot"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>
-       </div>
-       <div class="face back"></div>
+       <div class="face front">${cardSVG(card)}</div>
+       <div class="face back">${cardBackSVG()}</div>
      </div>`;
   return el;
 }
