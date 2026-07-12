@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Ungar's Aces — Entraîneur de Blackjack</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -35,14 +35,20 @@
   --shadow-deep: 0 20px 50px rgba(0,0,0,.45);
 }
 *{box-sizing:border-box;}
+html{background:#081a14;}
 html,body{margin:0;padding:0;overflow-x:hidden;max-width:100%;}
 body{
   background: radial-gradient(ellipse at 50% 0%, #163d30 0%, #081a14 70%);
   color:var(--cream);
   font-family:'Inter',sans-serif;
-  min-height:100vh;
+  min-height:100dvh;
   -webkit-font-smoothing:antialiased;
   overscroll-behavior:none;
+  /* cover the iOS status bar area */
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  box-sizing:border-box;
 }
 h1,h2,h3,.display{font-family:'Fraunces',serif;}
 .mono{font-family:'JetBrains Mono',monospace;}
@@ -85,6 +91,7 @@ button{cursor:pointer;font-family:'Inter',sans-serif;}
   position:fixed;inset:0;z-index:100;
   background:radial-gradient(ellipse at 50% 20%, #163d30 0%, #081a14 75%);
   display:flex;align-items:center;justify-content:center;padding:28px;
+  padding-top:calc(28px + env(safe-area-inset-top));
   animation:fadein .4s ease;
 }
 #welcome.hide{opacity:0;pointer-events:none;transition:opacity .45s ease;}
@@ -159,14 +166,15 @@ input[type=range]::-webkit-slider-thumb{
 .table-wrap{position:relative;}
 .felt{
   position:relative;
-  background:
-    radial-gradient(ellipse at 50% 30%, var(--felt-light) 0%, var(--felt) 55%, var(--felt-dark) 100%);
+  background: var(--table-bg,
+    radial-gradient(ellipse at 50% 30%, var(--felt-light) 0%, var(--felt) 55%, var(--felt-dark) 100%));
   border-radius:50%/38%;
-  border:14px solid var(--rail);
+  border:14px solid var(--table-rail, var(--rail));
   box-shadow:var(--shadow-deep), inset 0 0 60px rgba(0,0,0,.35);
   min-height:520px;
   padding:20px;
   overflow:visible;
+  transition:background .6s ease, border-color .4s ease;
 }
 .felt::before{
   content:'UNGAR\'S ACES • PAIE 3:2 • ASSURANCE 2:1';
@@ -180,19 +188,40 @@ input[type=range]::-webkit-slider-thumb{
 .hand-cards.stacked .card{margin-left:-20px;}
 .hand-cards.stacked .card:first-child{margin-left:0;}
 .card{
-  width:66px;height:94px;border-radius:9px;background:var(--cream);
-  box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.06);
-  display:flex;flex-direction:column;justify-content:space-between;padding:6px 7px;
-  font-weight:700;font-size:18px;color:var(--ink);position:relative;
+  width:66px;height:94px;border-radius:9px;
+  background:#fdf8f0;
+  box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1.5px rgba(0,0,0,.12), inset 0 0 0 3px rgba(0,0,0,.04);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:4px 5px;font-weight:800;font-size:16px;color:#1a1208;
+  position:relative;overflow:hidden;
 }
 .card.dealing{animation:dealCard .26s ease;}
-.card.red{color:var(--red);}
-.card .rank-top{align-self:flex-start;line-height:1;}
-.card .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:30px;}
-.card .rank-bot{align-self:flex-end;transform:rotate(180deg);line-height:1;}
+.card.red{color:#c0261a;}
+/* coin haut gauche */
+.card .corner{display:flex;flex-direction:column;align-items:center;line-height:1;gap:0px;}
+.card .corner .r{font-size:15px;font-weight:900;letter-spacing:-.02em;}
+.card .corner .s{font-size:12px;line-height:1;}
+.card .corner-bot{transform:rotate(180deg);align-self:flex-end;}
+/* grand pip central */
+.card .pip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;opacity:.88;}
+/* filet intérieur décoratif */
+.card::before{
+  content:'';position:absolute;inset:4px;border-radius:5px;
+  border:1px solid rgba(0,0,0,.08);pointer-events:none;
+}
+/* DOS — motif classique damier diagonal */
 .card.back{
-  background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
+  background:#fdf8f0;
   border:2px solid var(--gold);
+}
+.card.back::before{display:none;}
+.card.back::after{
+  content:'';position:absolute;inset:5px;border-radius:4px;
+  background:
+    repeating-linear-gradient(45deg,  #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px),
+    repeating-linear-gradient(-45deg, #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px);
+  background-color:#1e3c7a;
+  border:1.5px solid rgba(201,162,75,.6);
 }
 @keyframes dealCard{from{opacity:0;transform:translateY(-18px) scale(.85);}to{opacity:1;transform:none;}}
 .hand-total{font-size:12px;margin-top:6px;font-family:'JetBrains Mono',monospace;color:var(--gold-light);opacity:.9;}
@@ -218,11 +247,11 @@ input[type=range]::-webkit-slider-thumb{
 .seat.splitting{z-index:6;transform:translate(-50%,-100%) !important;}
 .hand-cards.stack{flex-direction:column !important;align-items:center;gap:5px;}
 .hand-cards.stack .card{width:48px;height:68px;font-size:13px;}
-.hand-cards.stack .card .suit-mid{font-size:20px;}
+.hand-cards.stack .card .pip{font-size:20px;}
 .hand-cards.stack.s3 .card{width:42px;height:60px;font-size:12px;}
-.hand-cards.stack.s3 .card .suit-mid{font-size:17px;}
+.hand-cards.stack.s3 .card .pip{font-size:17px;}
 .hand-cards.stack.s4 .card{width:37px;height:53px;font-size:11px;}
-.hand-cards.stack.s4 .card .suit-mid{font-size:15px;}
+.hand-cards.stack.s4 .card .pip{font-size:15px;}
 
 /* on-table decision score counter */
 .score-overlay{
@@ -272,6 +301,35 @@ input[type=range]::-webkit-slider-thumb{
 .metric-chip.secret .m-hint{font-size:8.5px;opacity:.4;margin-top:1px;}
 
 .table-footer{display:flex;justify-content:center;gap:10px;margin-top:12px;}
+
+/* Sélecteur d'ambiance */
+.table-theme-btn{
+  position:absolute;bottom:18px;right:18px;z-index:8;
+  background:rgba(0,0,0,.3);border:1px solid rgba(230,204,133,.3);
+  color:var(--gold-light);border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:600;
+  letter-spacing:.04em;backdrop-filter:blur(4px);cursor:pointer;
+}
+.table-theme-btn:hover{background:rgba(0,0,0,.5);}
+.theme-modal-overlay{
+  position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+  display:none;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);
+}
+.theme-modal-overlay.show{display:flex;}
+.theme-modal{
+  width:100%;max-width:600px;background:#111c17;border-radius:20px 20px 0 0;
+  padding:20px 16px 28px;border-top:1px solid rgba(230,204,133,.2);
+}
+.theme-modal h3{font-family:'Fraunces',serif;margin:0 0 14px;color:var(--gold-light);font-size:17px;}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;}
+.theme-swatch{
+  border-radius:12px;aspect-ratio:1/0.65;cursor:pointer;position:relative;overflow:hidden;
+  border:2px solid transparent;transition:border-color .15s,transform .1s;
+}
+.theme-swatch:hover{transform:scale(1.04);}
+.theme-swatch.active{border-color:var(--gold-light);}
+.theme-swatch .th-rail{position:absolute;inset:0;border-radius:10px;border:5px solid;}
+.theme-swatch .th-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:9.5px;color:#fff;font-weight:600;letter-spacing:.04em;text-shadow:0 1px 3px rgba(0,0,0,.7);}
+.theme-modal-close{display:block;margin:16px auto 0;background:rgba(255,255,255,.08);border:none;color:var(--cream);border-radius:9px;padding:10px 28px;font-size:14px;cursor:pointer;}
 .setup-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
 .hidden{display:none !important;}
 
@@ -308,18 +366,29 @@ input[type=range]::-webkit-slider-thumb{
 .cc.closing .flip{animation:cardOut .32s cubic-bezier(.4,0,.6,1) both;}
 .cc .face{
   position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;
-  display:flex;flex-direction:column;justify-content:space-between;padding:6px 8px;
-  font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.4);
+  display:flex;flex-direction:column;justify-content:space-between;padding:5px 6px;
+  font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.4);overflow:hidden;
 }
-.cc .face.front{background:var(--cream);color:var(--ink);}
-.cc .face.front.red{color:var(--red);}
+.cc .face.front{background:#fdf8f0;color:#1a1208;}
+.cc .face.front.red{color:#c0261a;}
+.cc .face.front::before{content:'';position:absolute;inset:3px;border-radius:4px;border:1px solid rgba(0,0,0,.07);pointer-events:none;}
 .cc .face.back{
   transform:rotateY(180deg);border:2px solid var(--gold);
-  background:repeating-linear-gradient(135deg, var(--felt-light) 0 6px, var(--felt) 6px 12px);
+  background:#fdf8f0;
 }
-.cc .rank-top{align-self:flex-start;line-height:1;}
-.cc .suit-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
-.cc .rank-bot{align-self:flex-end;transform:rotate(180deg);line-height:1;}
+.cc .face.back::after{
+  content:'';position:absolute;inset:5px;border-radius:4px;
+  background:
+    repeating-linear-gradient(45deg,  #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px),
+    repeating-linear-gradient(-45deg, #1a4d8a 0, #1a4d8a 3px, transparent 3px, transparent 8px);
+  background-color:#1e3c7a;
+  border:1.5px solid rgba(201,162,75,.6);
+}
+.cc .corner{display:flex;flex-direction:column;align-items:center;line-height:1;}
+.cc .corner .r{font-size:14px;font-weight:900;}
+.cc .corner .s{font-size:11px;}
+.cc .corner-bot{transform:rotate(180deg);align-self:flex-end;}
+.cc .pip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
 /* smooth continuous deal: slides down from the deck while flipping face-up, eases to rest, stays */
 @keyframes cardIn{
   0%   {transform:translate(var(--fromX,0), var(--fromY,-140px)) scale(.82) rotateY(180deg);opacity:0;}
@@ -335,16 +404,18 @@ input[type=range]::-webkit-slider-thumb{
 /* ---- Flux mode: a growing pile ---- */
 .pile-zone{position:absolute;top:170px;left:50%;transform:translateX(-50%);width:118px;height:168px;}
 .pile-zone .cc{width:118px;height:168px;inset:0;}
-.pile-zone .cc .suit-mid{font-size:56px;}
-.pile-zone .cc .face{font-size:30px;}
+.pile-zone .cc .pip{font-size:56px;}
+.pile-zone .cc .face{font-size:28px;}
 
 /* ---- Table mode ---- */
 .ct-table{position:absolute;inset:0;display:none;}
 .ct-table.show{display:block;}
 .ct-seat-label{position:absolute;font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.5;color:var(--cream);white-space:nowrap;transform:translateX(-50%);}
 .ct-table .cc{width:52px;height:74px;}
-.ct-table .cc .suit-mid{font-size:24px;}
-.ct-table .cc .face{font-size:14px;border-radius:7px;padding:3px 4px;}
+.ct-table .cc .pip{font-size:22px;}
+.ct-table .cc .face{font-size:12px;border-radius:7px;padding:3px 4px;}
+.ct-table .cc .corner .r{font-size:12px;}
+.ct-table .cc .corner .s{font-size:10px;}
 
 .count-progress{position:absolute;bottom:14px;left:14px;right:14px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
 .count-progress .bar{height:100%;background:var(--gold);width:0%;transition:width .1s linear;}
@@ -461,7 +532,7 @@ table.dev td.action-tag{font-weight:700;}
   .dealer-label{font-size:10px;margin-bottom:3px;}
 
   .card{width:60px;height:85px;font-size:16px;border-radius:8px;padding:5px 6px;}
-  .card .suit-mid{font-size:26px;}
+  .card .pip{font-size:26px;}
   .hand-cards{min-height:88px;}
   .hand-cards.stacked .card{margin-left:-16px;}
 
@@ -485,7 +556,7 @@ table.dev td.action-tag{font-weight:700;}
   .action-bar button{min-width:0;flex:1;font-size:12.5px;padding:11px 4px;}
 
   .deal-card{width:104px;height:150px;}
-  .deal-card .suit-mid{font-size:48px;}
+
   .deal-card .face{font-size:26px;}
   .deck-visual{width:82px;height:120px;}
   .flash-card-zone{margin-top:104px;min-height:164px;}
@@ -623,6 +694,7 @@ table.dev td.action-tag{font-weight:700;}
           <div class="hand-total" id="dealer-total">&nbsp;</div>
         </div>
         <div class="seats-ring" id="seats-ring"></div>
+        <button class="table-theme-btn" id="table-theme-btn">🎨 Ambiance</button>
       </div>
 
       <div class="feedback-banner" id="feedback-banner">
@@ -641,6 +713,15 @@ table.dev td.action-tag{font-weight:700;}
         <button class="btn btn-gold" id="btn-next-hand" style="display:none;">Main suivante</button>
         <button class="btn btn-outline" id="btn-leave-table">Quitter la table</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL AMBIANCE ============ -->
+  <div class="theme-modal-overlay" id="theme-modal-overlay">
+    <div class="theme-modal">
+      <h3>Choisir une ambiance</h3>
+      <div class="theme-grid" id="theme-grid"></div>
+      <button class="theme-modal-close" id="theme-modal-close">Fermer</button>
     </div>
   </div>
 
@@ -1044,6 +1125,8 @@ function startGame(){
   layoutSeats();
   updateMetrics();
   updateScore();
+  // appliquer le thème courant maintenant que .felt est visible
+  applyTheme(currentTheme);
   dealRound();
 }
 
@@ -1133,7 +1216,10 @@ function renderCard(card, faceDown, animate){
   div.className = 'card' + (faceDown?' back':'') + (card && isRed(card.suit) && !faceDown ? ' red':'') + (animate?' dealing':'');
   div.dataset.key = faceDown ? 'back' : (card.rank+card.suit);
   if(!faceDown){
-    div.innerHTML = `<div class="rank-top">${card.rank}</div><div class="suit-mid">${card.suit}</div><div class="rank-bot">${card.rank}</div>`;
+    div.innerHTML = `
+      <div class="corner"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>
+      <div class="pip">${card.suit}</div>
+      <div class="corner corner-bot"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>`;
   }
   return div;
 }
@@ -1427,6 +1513,113 @@ function wireActionButtons(){
 }
 wireActionButtons();
 
+/* ============================================================
+   AMBIANCES DE TABLE (10 fonds)
+   ============================================================ */
+const TABLE_THEMES = [
+  {
+    id:'casino', label:'Casino Vegas',
+    bg:'radial-gradient(ellipse at 50% 30%, #1c6349 0%, #0f4a37 55%, #0b3d2e 100%)',
+    rail:'#2a1710', text:'rgba(230,204,133,.22)'
+  },
+  {
+    id:'royale', label:'Casino Royale',
+    bg:'radial-gradient(ellipse at 50% 30%, #1a1a6e 0%, #0d0d50 55%, #060630 100%)',
+    rail:'#1a0a08', text:'rgba(200,180,255,.2)'
+  },
+  {
+    id:'macau', label:'Macau',
+    bg:'radial-gradient(ellipse at 50% 30%, #7a1a1a 0%, #5c0d0d 55%, #380808 100%)',
+    rail:'#1a0a00', text:'rgba(255,200,100,.2)'
+  },
+  {
+    id:'monaco', label:'Monte Carlo',
+    bg:'radial-gradient(ellipse at 50% 30%, #1a3a5c 0%, #0d2440 55%, #06121f 100%)',
+    rail:'#0a1828', text:'rgba(180,220,255,.18)'
+  },
+  {
+    id:'nuit', label:'Nuit de Paris',
+    bg:'radial-gradient(ellipse at 50% 30%, #1a1a1a 0%, #111 55%, #050505 100%)',
+    rail:'#111', text:'rgba(255,230,100,.18)'
+  },
+  {
+    id:'amis', label:'Table entre amis',
+    bg:'radial-gradient(ellipse at 50% 30%, #5c4430 0%, #3d2b1e 55%, #271a10 100%)',
+    rail:'#1a0e06', text:'rgba(255,220,160,.2)'
+  },
+  {
+    id:'foret', label:'Forêt',
+    bg:'radial-gradient(ellipse at 50% 30%, #2d4a1e 0%, #1d3212 55%, #0e1a08 100%)',
+    rail:'#0d1a05', text:'rgba(180,255,140,.15)'
+  },
+  {
+    id:'ocean', label:'Bord de mer',
+    bg:'radial-gradient(ellipse at 50% 30%, #1a5c6e 0%, #0d3d50 55%, #061e2a 100%)',
+    rail:'#061828', text:'rgba(160,240,255,.18)'
+  },
+  {
+    id:'desert', label:'Désert',
+    bg:'radial-gradient(ellipse at 50% 30%, #7a5a20 0%, #5c3f0d 55%, #382206 100%)',
+    rail:'#28180a', text:'rgba(255,220,120,.2)'
+  },
+  {
+    id:'snow', label:'Chalet montagne',
+    bg:'radial-gradient(ellipse at 50% 30%, #3d5c7a 0%, #243d55 55%, #101e2a 100%)',
+    rail:'#1a2835', text:'rgba(200,230,255,.18)'
+  },
+];
+
+let currentTheme = storeGet('table-theme') || 'casino';
+
+function applyTheme(id){
+  const th = TABLE_THEMES.find(t=>t.id===id) || TABLE_THEMES[0];
+  const felt = document.querySelector('.felt');
+  if(!felt) return;
+  felt.style.setProperty('--table-bg', th.bg);
+  felt.style.setProperty('--table-rail', th.rail);
+  // mise à jour du filigrane couleur
+  const pseudo = document.createElement('style');
+  pseudo.id='theme-pseudo';
+  const old=document.getElementById('theme-pseudo');
+  if(old) old.remove();
+  pseudo.textContent = `.felt::before { color:${th.text}; }`;
+  document.head.appendChild(pseudo);
+  currentTheme = id;
+  storeSet('table-theme', id);
+  // mettre à jour les swatches
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.toggle('active', s.dataset.themeId===id));
+}
+
+function buildThemeGrid(){
+  const grid = document.getElementById('theme-grid');
+  if(!grid) return;
+  grid.innerHTML='';
+  TABLE_THEMES.forEach(th=>{
+    const sw=document.createElement('div');
+    sw.className='theme-swatch'+(th.id===currentTheme?' active':'');
+    sw.dataset.themeId=th.id;
+    sw.innerHTML=`<div style="position:absolute;inset:0;background:${th.bg};border-radius:10px;"></div>
+                  <div class="th-rail" style="border-color:${th.rail};"></div>
+                  <div class="th-label">${th.label}</div>`;
+    sw.addEventListener('click', ()=>applyTheme(th.id));
+    grid.appendChild(sw);
+  });
+}
+
+document.getElementById('table-theme-btn').addEventListener('click', ()=>{
+  buildThemeGrid();
+  document.getElementById('theme-modal-overlay').classList.add('show');
+});
+document.getElementById('theme-modal-close').addEventListener('click', ()=>{
+  document.getElementById('theme-modal-overlay').classList.remove('show');
+});
+document.getElementById('theme-modal-overlay').addEventListener('click', (e)=>{
+  if(e.target===e.currentTarget) document.getElementById('theme-modal-overlay').classList.remove('show');
+});
+
+// appliquer le thème sauvegardé au démarrage
+document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(()=>applyTheme(currentTheme), 50); });
+
 function showFeedback(userAction, rec){
   const banner = document.getElementById('feedback-banner');
   const main = document.getElementById('feedback-main');
@@ -1631,9 +1824,9 @@ function makeFlipCard(card, fromX, fromY){
   el.innerHTML =
     `<div class="flip">
        <div class="face front${red}">
-         <div class="rank-top">${card.rank}</div>
-         <div class="suit-mid">${card.suit}</div>
-         <div class="rank-bot">${card.rank}</div>
+         <div class="corner"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>
+         <div class="pip">${card.suit}</div>
+         <div class="corner corner-bot"><div class="r">${card.rank}</div><div class="s">${card.suit}</div></div>
        </div>
        <div class="face back"></div>
      </div>`;
