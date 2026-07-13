@@ -1154,8 +1154,13 @@ function layoutSeats(){
     const seat = game.seats[i];
     // Seat 1 sits on the right; higher seat numbers fan out to the left.
     // Positions clamped between 24% and 76% to avoid overflow with the wider seats.
+    // For n=4, use custom positions with a wider mid-gap so the two center seats
+    // don't crowd each other when both accumulate cards.
     const t = n===1 ? 0.5 : i/(n-1);
-    const leftPct = n===1 ? 62 : (74 - t*48);
+    let leftPct;
+    if (n === 1) leftPct = 62;
+    else if (n === 4) leftPct = [74, 62, 36, 24][i];
+    else leftPct = 74 - t*48;
     // stagger heights in a zigzag so neighbouring seats never sit at the same
     // level (prevents card overlap, especially during splits)
     const zig = (i % 2 === 0) ? 0 : 26;
