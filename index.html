@@ -277,16 +277,17 @@ input[type=range]::-webkit-slider-thumb{
 .metric-chip.secret.revealed .m-val{filter:none;}
 .metric-chip.secret .m-hint{font-size:8.5px;opacity:.4;margin-top:1px;}
 
-.table-footer{display:flex;justify-content:center;gap:10px;margin-top:12px;}
-
-/* Sélecteur d'ambiance */
-.table-theme-btn{
-  position:absolute;bottom:18px;right:18px;z-index:8;
-  background:rgba(0,0,0,.3);border:1px solid rgba(230,204,133,.3);
-  color:var(--gold-light);border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:600;
-  letter-spacing:.04em;backdrop-filter:blur(4px);cursor:pointer;
+.table-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;margin-top:12px;
 }
-.table-theme-btn:hover{background:rgba(0,0,0,.5);}
+.btn-slim{padding:9px 14px !important;font-size:13px !important;}
+.btn-ambiance{
+  background:rgba(0,0,0,.35);border:1px solid rgba(230,204,133,.35);
+  color:var(--gold-light);border-radius:8px;padding:9px 12px;font-size:12.5px;font-weight:600;
+  letter-spacing:.03em;cursor:pointer;white-space:nowrap;
+}
+.btn-ambiance:hover{background:rgba(0,0,0,.55);}
 .theme-modal-overlay{
   position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
   display:none;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);
@@ -476,26 +477,37 @@ table.dev td.action-tag{font-weight:700;}
   /* when the table is live, lock the play view to one screen */
   #view-play.playing .table-wrap{
     display:flex;flex-direction:column;
-    height:calc(100dvh - 132px);
+    height:calc(100dvh - 118px);
   }
   #view-play.playing .felt{
-    flex:1;min-height:0;border-radius:22px;padding:10px;border-width:10px;
+    flex:1;min-height:0;border-radius:22px;padding:8px;border-width:8px;
   }
   #view-play.playing .action-bar{flex:none;}
-  #view-play.playing .table-footer{flex:none;}
+  #view-play.playing .table-footer{flex:none;margin-top:8px;}
+  body.playing{overflow:hidden;}
+  body.playing #app{padding-top:10px;padding-bottom:0;overflow:hidden;height:100dvh;}
+  body.playing .topbar{margin-bottom:10px;padding-bottom:10px;}
 
   .felt::before{font-size:8px;top:44%;letter-spacing:.12em;}
-  .dealer-zone{top:3%;width:auto;}
+  .dealer-zone{top:2%;width:auto;}
   .dealer-label{font-size:10px;margin-bottom:3px;}
 
-  .card{width:60px;height:85px;border-radius:8px;}
-  .hand-cards{min-height:88px;}
-  .hand-cards.stacked .card{margin-left:-16px;}
+  .card{width:68px;height:96px;border-radius:8px;}
+  .hand-cards{min-height:100px;}
+  .hand-cards.stacked{
+    flex-wrap:wrap;justify-content:center;
+    max-width:180px;margin:0 auto;
+  }
+  .hand-cards.stacked .card{margin-left:-22px;position:relative;}
+  .hand-cards.stacked .card:first-child{margin-left:0;}
+  /* Row 2 : à partir de la 4e carte, translateY pour chevauchement vertical propre */
+  .hand-cards.stacked .card:nth-child(4){margin-left:12px;transform:translateY(-52px);z-index:2;}
+  .hand-cards.stacked .card:nth-child(n+5){margin-left:-22px;transform:translateY(-52px);z-index:2;}
 
-  .seat{width:118px;}
+  .seat{width:180px;}
   .seat .seat-label{font-size:9.5px;margin-bottom:3px;}
-  .seat .hand-cards{transform:scale(.72);min-height:60px;}
-  .seat.me .hand-cards{transform:scale(.92);}
+  .seat .hand-cards{transform:scale(.78);min-height:90px;}
+  .seat.me .hand-cards{transform:scale(.95);}
   .seat-msg{font-size:10px;padding:2px 6px;}
   .hand-total{font-size:11px;margin-top:3px;}
 
@@ -651,7 +663,6 @@ table.dev td.action-tag{font-weight:700;}
           <div class="hand-total" id="dealer-total">&nbsp;</div>
         </div>
         <div class="seats-ring" id="seats-ring"></div>
-        <button class="table-theme-btn" id="table-theme-btn">🎨 Ambiance</button>
       </div>
 
       <div class="feedback-banner" id="feedback-banner">
@@ -667,8 +678,9 @@ table.dev td.action-tag{font-weight:700;}
       </div>
 
       <div class="table-footer">
+        <button class="btn btn-outline btn-slim" id="btn-leave-table">Quitter la table</button>
         <button class="btn btn-gold" id="btn-next-hand" style="display:none;">Main suivante</button>
-        <button class="btn btn-outline" id="btn-leave-table">Quitter la table</button>
+        <button class="btn-ambiance" id="table-theme-btn">🎨 Ambiance</button>
       </div>
     </div>
   </div>
@@ -1098,6 +1110,7 @@ function startGame(){
   document.getElementById('setup-panel').classList.add('hidden');
   document.getElementById('table-panel').classList.remove('hidden');
   document.getElementById('view-play').classList.add('playing');
+  document.body.classList.add('playing');
   layoutSeats();
   updateMetrics();
   updateScore();
@@ -1129,6 +1142,7 @@ document.getElementById('btn-leave-table').addEventListener('click', ()=>{
   document.getElementById('table-panel').classList.add('hidden');
   document.getElementById('setup-panel').classList.remove('hidden');
   document.getElementById('view-play').classList.remove('playing');
+  document.body.classList.remove('playing');
   game=null;
 });
 
@@ -1139,12 +1153,13 @@ function layoutSeats(){
   for(let i=0;i<n;i++){
     const seat = game.seats[i];
     // Seat 1 sits on the right; higher seat numbers fan out to the left.
+    // Positions clamped between 24% and 76% to avoid overflow with the wider seats.
     const t = n===1 ? 0.5 : i/(n-1);
-    const leftPct = n===1 ? 68 : (88 - t*76);
+    const leftPct = n===1 ? 62 : (74 - t*48);
     // stagger heights in a zigzag so neighbouring seats never sit at the same
     // level (prevents card overlap, especially during splits)
     const zig = (i % 2 === 0) ? 0 : 16;
-    const topPct = 60 + zig;
+    const topPct = 55 + zig;
     const div = document.createElement('div');
     div.className = 'seat'+(seat.isMe?' me':'');
     div.style.left = leftPct+'%';
@@ -1315,7 +1330,10 @@ function renderAll(){
       const wrap = document.createElement('div');
       wrap.className='hand-wrap';
       wrap.style.display='flex';
+      wrap.style.flexWrap='wrap';
+      wrap.style.justifyContent='center';
       wrap.style.alignItems='flex-start';
+      wrap.style.maxWidth='180px';
       cont.appendChild(wrap);
     }
     while(cont.children.length > s.hands.length){
@@ -1326,9 +1344,27 @@ function renderAll(){
       wrap.style.filter = (s.isMe && hi===s.activeHandIdx && s.hands.length>1)
         ? 'drop-shadow(0 0 7px rgba(230,204,133,.75))' : 'none';
       syncCards(wrap, h.cards, false);
-      // apply overlap margins to cards beyond the first
+      // Layout des cartes :
+      // - ligne 1 : jusqu'à 3 cartes, chevauchement horizontal -22px
+      // - ligne 2 : cartes 4+, wrap naturel + translateY(-52px) pour chevauchement vertical
       Array.from(wrap.children).forEach((cardEl,ci)=>{
-        cardEl.style.marginLeft = ci>0 ? '-18px' : '0';
+        cardEl.style.position = 'relative';
+        cardEl.style.transform = '';
+        cardEl.style.zIndex = ci;
+        if (ci === 0){
+          cardEl.style.marginLeft = '0';
+        } else if (ci < 3){
+          cardEl.style.marginLeft = '-22px';
+        } else if (ci === 3){
+          // début ligne 2 — léger décalage horizontal pour montrer la carte du dessus
+          cardEl.style.marginLeft = '12px';
+          cardEl.style.transform = 'translateY(-52px)';
+          cardEl.style.zIndex = 10 + ci;
+        } else {
+          cardEl.style.marginLeft = '-22px';
+          cardEl.style.transform = 'translateY(-52px)';
+          cardEl.style.zIndex = 10 + ci;
+        }
       });
     });
     const totalEl = document.getElementById('seat-total-'+s.seatNo);
