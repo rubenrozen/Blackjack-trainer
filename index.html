@@ -210,6 +210,9 @@ input[type=range]::-webkit-slider-thumb{
 .seat{
   position:absolute;width:140px;text-align:center;transform:translate(-50%,-50%);
 }
+/* Sièges de la rangée basse : ancrage par le haut (label et cartes descendent vers le bas)
+   pour ne pas chevaucher la rangée du dessus ni le watermark central. */
+.seat.anchor-top{transform:translate(-50%,0);}
 .seat .seat-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:5px;}
 .seat.me .seat-label{color:var(--gold-light);opacity:.9;font-weight:700;}
 .seat.me{filter:drop-shadow(0 0 10px rgba(230,204,133,.25));}
@@ -230,6 +233,20 @@ input[type=range]::-webkit-slider-thumb{
 .hand-cards.stack .card{width:60px;height:84px;}
 .hand-cards.stack.s3 .card{width:52px;height:73px;}
 .hand-cards.stack.s4 .card{width:46px;height:64px;}
+
+/* Chaque main occupe un slot (cartes + mini-total en dessous, visible en split). */
+.hand-slot{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.hand-mini-total{
+  font-size:12px;font-weight:700;
+  color:var(--gold-light);
+  background:rgba(0,0,0,.4);
+  padding:2px 10px;border-radius:6px;
+  font-family:'JetBrains Mono', monospace;
+  min-width:38px;text-align:center;
+  letter-spacing:.02em;
+  display:none; /* visible seulement en mode split (JS toggle) */
+}
+.hand-cards.stack .hand-mini-total{display:inline-block;}
 
 /* Solo mode : one seat only (me). Bigger cards, centered lower on the felt. */
 .seat.me.solo .hand-cards{transform:scale(1.25);transform-origin:center top;}
@@ -1263,13 +1280,20 @@ function layoutSeats(){
     if (n === 1) leftPct = 50;
     else if (n === 4) leftPct = [74, 62, 36, 24][i];
     else leftPct = 74 - t*48;
-    // stagger heights in a zigzag so neighbouring seats never sit at the same
-    // level (prevents card overlap, especially during splits)
-    const zig = (i % 2 === 0) ? 0 : 26;
-    // Solo : plus bas vers moi (68% au lieu de 55%). Sinon zigzag habituel.
-    const topPct = (n === 1) ? 66 : (55 + zig);
+    // Rangée haute : i pair — ancrage centre à 50% du felt
+    // Rangée basse : i impair — ancrage TOP à 66% du felt (descend vers le bas
+    //                pour ne pas chevaucher la rangée du dessus)
+    const isBottomRow = (i % 2 !== 0);
+    // Solo : plus bas vers moi (68%). Sinon rangée haute à 50%, basse à 66%.
+    let topPct;
+    if (n === 1) topPct = 66;
+    else if (isBottomRow) topPct = 66;
+    else topPct = 50;
     const div = document.createElement('div');
-    div.className = 'seat'+(seat.isMe?' me':'')+(n===1 && seat.isMe?' solo':'');
+    div.className = 'seat'
+      + (seat.isMe?' me':'')
+      + (n===1 && seat.isMe?' solo':'')
+      + (isBottomRow?' anchor-top':'');
     div.style.left = leftPct+'%';
     div.style.top = topPct+'%';
     div.id = 'seat-'+seat.seatNo;
@@ -1433,8 +1457,10 @@ function renderAll(){
       cont.style.flexDirection='row';
       cont.style.gap='8px';
     }
-    // ensure one wrap per hand
+    // ensure one hand-slot per hand (each slot = cards + mini-total below)
     while(cont.children.length < s.hands.length){
+      const slot = document.createElement('div');
+      slot.className = 'hand-slot';
       const wrap = document.createElement('div');
       wrap.className='hand-wrap';
       wrap.style.display='flex';
@@ -1442,13 +1468,19 @@ function renderAll(){
       wrap.style.justifyContent='center';
       wrap.style.alignItems='flex-start';
       wrap.style.maxWidth='180px';
-      cont.appendChild(wrap);
+      slot.appendChild(wrap);
+      const mini = document.createElement('div');
+      mini.className = 'hand-mini-total';
+      slot.appendChild(mini);
+      cont.appendChild(slot);
     }
     while(cont.children.length > s.hands.length){
       cont.removeChild(cont.lastElementChild);
     }
     s.hands.forEach((h,hi)=>{
-      const wrap = cont.children[hi];
+      const slot = cont.children[hi];
+      const wrap = slot.querySelector('.hand-wrap');
+      const mini = slot.querySelector('.hand-mini-total');
       wrap.style.filter = (s.isMe && hi===s.activeHandIdx && s.hands.length>1)
         ? 'drop-shadow(0 0 7px rgba(230,204,133,.75))' : 'none';
       syncCards(wrap, h.cards, false);
@@ -1474,13 +1506,25 @@ function renderAll(){
           cardEl.style.zIndex = 10 + ci;
         }
       });
+      // Mini-total visible seulement en split (le CSS l'active via .hand-cards.stack)
+      if (h.cards.length > 0) {
+        const hv = handValue(h.cards);
+        mini.textContent = hv.soft ? ('Souple '+hv.total) : hv.total;
+      } else {
+        mini.textContent = '';
+      }
     });
     const totalEl = document.getElementById('seat-total-'+s.seatNo);
-    const parts = s.hands.map(h=>{
-      const hv=handValue(h.cards);
-      return h.cards.length ? (hv.soft?'Souple '+hv.total:hv.total) : '';
-    });
-    totalEl.textContent = parts.filter(Boolean).join(' / ');
+    if (splitting) {
+      // Masquer le total global — chaque main a son propre mini-total à côté
+      totalEl.textContent = '';
+    } else {
+      const parts = s.hands.map(h=>{
+        const hv=handValue(h.cards);
+        return h.cards.length ? (hv.soft?'Souple '+hv.total:hv.total) : '';
+      });
+      totalEl.textContent = parts.filter(Boolean).join(' / ');
+    }
     const msgEl = document.getElementById('seat-msg-'+s.seatNo);
     if(msgEl){
       msgEl.innerHTML = s.message ? `<span class="seat-msg ${s.message.good?'good':'bad'}">${s.message.text}</span>` : '';
