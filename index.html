@@ -208,11 +208,11 @@ input[type=range]::-webkit-slider-thumb{
 
 .seats-ring{position:absolute;inset:0;}
 .seat{
-  position:absolute;width:140px;text-align:center;transform:translate(-50%,-50%);
+  position:absolute;width:140px;text-align:center;
+  /* Ancrage par le HAUT : quand une main grandit (tirages, splits), elle ne
+     peut que pousser vers le bas — elle ne remonte jamais vers la banque. */
+  transform:translate(-50%,0);
 }
-/* Sièges de la rangée basse : ancrage par le haut (label et cartes descendent vers le bas)
-   pour ne pas chevaucher la rangée du dessus ni le watermark central. */
-.seat.anchor-top{transform:translate(-50%,0);}
 .seat .seat-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:5px;}
 .seat.me .seat-label{color:var(--gold-light);opacity:.9;font-weight:700;}
 .seat.me{filter:drop-shadow(0 0 10px rgba(230,204,133,.25));}
@@ -226,27 +226,41 @@ input[type=range]::-webkit-slider-thumb{
 .seat-msg.bad{color:#ffb4ab;}
 
 /* when a seat splits, its hands stack vertically at its OWN position (no more
-   translating the seat upward — the user prefers seats stay put). Cards stay
-   readable rather than shrinking aggressively. */
+   translating the seat upward — the user prefers seats stay put). */
 .seat.splitting{z-index:6;}
-.hand-cards.stack{flex-direction:column !important;align-items:center;gap:5px;}
-.hand-cards.stack .card{width:60px;height:84px;}
-.hand-cards.stack.s3 .card{width:52px;height:73px;}
-.hand-cards.stack.s4 .card{width:46px;height:64px;}
+.hand-cards.stack{flex-direction:column !important;align-items:center;gap:4px;}
+.hand-cards.stack .card{width:56px;height:79px;}
+/* 3-4 mains : 2 colonnes pour rester dans la hauteur du feutre.
+   Dans ce mode, le mini-total passe SOUS les cartes (slot en colonne)
+   pour que deux slots tiennent côte à côte. */
+.hand-cards.stack.s3,.hand-cards.stack.s4{
+  flex-direction:row !important;flex-wrap:wrap;justify-content:center;
+  column-gap:8px;row-gap:4px;
+}
+.hand-cards.stack.s3 .card,.hand-cards.stack.s4 .card{width:40px;height:56px;}
+.hand-cards.stack.s3 .hand-slot,.hand-cards.stack.s4 .hand-slot{
+  flex-direction:column;gap:2px;
+}
+.hand-cards.stack.s3 .hand-mini-total,.hand-cards.stack.s4 .hand-mini-total{
+  font-size:10.5px;padding:1px 6px;min-width:26px;
+}
 
-/* Chaque main occupe un slot (cartes + mini-total en dessous, visible en split). */
-.hand-slot{display:flex;flex-direction:column;align-items:center;gap:3px;}
+/* Chaque main = un slot horizontal : cartes puis mini-total à DROITE.
+   Le mini-total est visible dès que ça se complique (split ou 4+ cartes). */
+.hand-slot{display:flex;flex-direction:row;align-items:center;gap:5px;}
 .hand-mini-total{
   font-size:12px;font-weight:700;
   color:var(--gold-light);
-  background:rgba(0,0,0,.4);
-  padding:2px 10px;border-radius:6px;
+  background:rgba(0,0,0,.45);
+  padding:2px 8px;border-radius:6px;
   font-family:'JetBrains Mono', monospace;
-  min-width:38px;text-align:center;
+  min-width:30px;text-align:center;
   letter-spacing:.02em;
-  display:none; /* visible seulement en mode split (JS toggle) */
+  display:none; /* activé en split ou main chargée (JS + CSS) */
+  white-space:nowrap;
 }
-.hand-cards.stack .hand-mini-total{display:inline-block;}
+.hand-cards.stack .hand-mini-total,
+.hand-cards.crowded .hand-mini-total{display:inline-block;}
 
 /* Solo mode : one seat only (me). Bigger cards, centered lower on the felt. */
 .seat.me.solo .hand-cards{transform:scale(1.25);transform-origin:center top;}
@@ -1269,31 +1283,24 @@ function layoutSeats(){
   const ring = document.getElementById('seats-ring');
   ring.innerHTML='';
   const n = game.seatsCount;
+  // Positions FIXES [left%, top%], ancrées par le HAUT du siège.
+  // Les mains poussent uniquement vers le bas — plus aucun mouvement vertical.
+  // n=2 : les deux sièges au même niveau (fini le yoyo moi-haut / bot-bas).
+  // n=3 : moi et siège 3 en rangée haute, siège 2 plus bas au centre.
+  const SEAT_POS = {
+    1: [[50,58]],
+    2: [[68,52],[32,52]],
+    3: [[74,44],[50,70],[26,44]],
+    4: [[74,44],[62,70],[36,44],[24,70]],
+  };
+  const coords = SEAT_POS[n] || SEAT_POS[3];
   for(let i=0;i<n;i++){
     const seat = game.seats[i];
-    // Seat 1 sits on the right; higher seat numbers fan out to the left.
-    // Positions clamped between 24% and 76% to avoid overflow with the wider seats.
-    // For n=4, use custom positions with a wider mid-gap so the two center seats
-    // don't crowd each other when both accumulate cards.
-    const t = n===1 ? 0.5 : i/(n-1);
-    let leftPct;
-    if (n === 1) leftPct = 50;
-    else if (n === 4) leftPct = [74, 62, 36, 24][i];
-    else leftPct = 74 - t*48;
-    // Rangée haute : i pair — ancrage centre à 50% du felt
-    // Rangée basse : i impair — ancrage TOP à 66% du felt (descend vers le bas
-    //                pour ne pas chevaucher la rangée du dessus)
-    const isBottomRow = (i % 2 !== 0);
-    // Solo : plus bas vers moi (68%). Sinon rangée haute à 50%, basse à 66%.
-    let topPct;
-    if (n === 1) topPct = 66;
-    else if (isBottomRow) topPct = 66;
-    else topPct = 50;
+    const [leftPct, topPct] = coords[i];
     const div = document.createElement('div');
     div.className = 'seat'
       + (seat.isMe?' me':'')
-      + (n===1 && seat.isMe?' solo':'')
-      + (isBottomRow?' anchor-top':'');
+      + (n===1 && seat.isMe?' solo':'');
     div.style.left = leftPct+'%';
     div.style.top = topPct+'%';
     div.id = 'seat-'+seat.seatNo;
@@ -1445,14 +1452,17 @@ function renderAll(){
     // shrink the cards (class-based, real size) so the total below stays clear
     const seatDiv = document.getElementById('seat-'+s.seatNo);
     const splitting = s.hands.length>1;
+    // crowded = au moins une main avec 4+ cartes (2e ligne de superposition)
+    const crowded = s.hands.some(h=>h.cards.length>3);
     if(seatDiv) seatDiv.classList.toggle('splitting', splitting);
     cont.classList.remove('stack','s3','s4');
+    cont.classList.toggle('crowded', crowded);
     cont.style.transform='';
     if(splitting){
       cont.classList.add('stack');
       if(s.hands.length===3) cont.classList.add('s3');
       if(s.hands.length>=4) cont.classList.add('s4');
-      cont.style.gap='5px';
+      cont.style.gap='';
     } else {
       cont.style.flexDirection='row';
       cont.style.gap='8px';
@@ -1477,6 +1487,10 @@ function renderAll(){
     while(cont.children.length > s.hands.length){
       cont.removeChild(cont.lastElementChild);
     }
+    // chevauchement adapté : cartes réduites en split multiple
+    const manyHands = s.hands.length >= 3;
+    const ovl = manyHands ? '-14px' : '-22px';
+    const row2y = manyHands ? 'translateY(-30px)' : 'translateY(-52px)';
     s.hands.forEach((h,hi)=>{
       const slot = cont.children[hi];
       const wrap = slot.querySelector('.hand-wrap');
@@ -1485,8 +1499,8 @@ function renderAll(){
         ? 'drop-shadow(0 0 7px rgba(230,204,133,.75))' : 'none';
       syncCards(wrap, h.cards, false);
       // Layout des cartes :
-      // - ligne 1 : jusqu'à 3 cartes, chevauchement horizontal -22px
-      // - ligne 2 : cartes 4+, wrap naturel + translateY(-52px) pour chevauchement vertical
+      // - ligne 1 : jusqu'à 3 cartes, chevauchement horizontal
+      // - ligne 2 : cartes 4+, wrap naturel + translateY pour chevauchement vertical
       Array.from(wrap.children).forEach((cardEl,ci)=>{
         cardEl.style.position = 'relative';
         cardEl.style.transform = '';
@@ -1494,29 +1508,30 @@ function renderAll(){
         if (ci === 0){
           cardEl.style.marginLeft = '0';
         } else if (ci < 3){
-          cardEl.style.marginLeft = '-22px';
+          cardEl.style.marginLeft = ovl;
         } else if (ci === 3){
           // début ligne 2 — léger décalage horizontal pour montrer la carte du dessus
           cardEl.style.marginLeft = '12px';
-          cardEl.style.transform = 'translateY(-52px)';
+          cardEl.style.transform = row2y;
           cardEl.style.zIndex = 10 + ci;
         } else {
-          cardEl.style.marginLeft = '-22px';
-          cardEl.style.transform = 'translateY(-52px)';
+          cardEl.style.marginLeft = ovl;
+          cardEl.style.transform = row2y;
           cardEl.style.zIndex = 10 + ci;
         }
       });
-      // Mini-total visible seulement en split (le CSS l'active via .hand-cards.stack)
+      // Mini-total (visible en split ou main chargée via CSS)
       if (h.cards.length > 0) {
         const hv = handValue(h.cards);
-        mini.textContent = hv.soft ? ('Souple '+hv.total) : hv.total;
+        // compact en split multiple pour tenir en 2 colonnes
+        mini.textContent = hv.soft ? (manyHands ? 'S'+hv.total : 'Souple '+hv.total) : hv.total;
       } else {
         mini.textContent = '';
       }
     });
     const totalEl = document.getElementById('seat-total-'+s.seatNo);
-    if (splitting) {
-      // Masquer le total global — chaque main a son propre mini-total à côté
+    if (splitting || crowded) {
+      // Le mini-total à droite de chaque main prend le relais
       totalEl.textContent = '';
     } else {
       const parts = s.hands.map(h=>{
