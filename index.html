@@ -222,13 +222,18 @@ input[type=range]::-webkit-slider-thumb{
 .seat-msg.good{color:#a6e6b0;}
 .seat-msg.bad{color:#ffb4ab;}
 
-/* when a seat splits, its hands stack vertically at its OWN position.
-   Cards shrink so the pile stays compact and never covers the total below. */
-.seat.splitting{z-index:6;transform:translate(-50%,-100%) !important;}
+/* when a seat splits, its hands stack vertically at its OWN position (no more
+   translating the seat upward — the user prefers seats stay put). Cards stay
+   readable rather than shrinking aggressively. */
+.seat.splitting{z-index:6;}
 .hand-cards.stack{flex-direction:column !important;align-items:center;gap:5px;}
-.hand-cards.stack .card{width:48px;height:68px;}
-.hand-cards.stack.s3 .card{width:42px;height:60px;}
-.hand-cards.stack.s4 .card{width:37px;height:53px;}
+.hand-cards.stack .card{width:60px;height:84px;}
+.hand-cards.stack.s3 .card{width:52px;height:73px;}
+.hand-cards.stack.s4 .card{width:46px;height:64px;}
+
+/* Solo mode : one seat only (me). Bigger cards, centered lower on the felt. */
+.seat.me.solo .hand-cards{transform:scale(1.25);transform-origin:center top;}
+.seat.me.solo .seat-label{font-size:12px;margin-bottom:8px;}
 
 /* on-table decision score counter */
 .score-overlay{
@@ -391,6 +396,42 @@ input[type=range]::-webkit-slider-thumb{
 .verdict-overlay.show{display:flex;}
 .verdict-overlay.good{background:rgba(20,60,40,.9);}
 .verdict-overlay.bad{background:rgba(70,24,20,.9);}
+
+/* ---------- Memory game specifics ---------- */
+.mem-progress{
+  position:absolute;top:14px;right:14px;
+  font-size:13px;font-weight:600;color:var(--gold-light);
+  background:rgba(0,0,0,.3);padding:6px 12px;border-radius:8px;
+  letter-spacing:.04em;
+}
+.mem-rank-grid{
+  display:grid;grid-template-columns:repeat(7, 1fr);gap:6px;
+  width:100%;max-width:360px;margin:12px 0;
+}
+.mem-rank-grid button{
+  padding:12px 4px;font-size:15px;font-weight:700;
+  border-radius:8px;border:1px solid rgba(230,204,133,.3);
+  background:rgba(0,0,0,.25);color:var(--cream);cursor:pointer;
+  transition:all .15s;
+}
+.mem-rank-grid button:hover{background:rgba(230,204,133,.15);}
+.mem-rank-grid button.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
+.mem-suit-grid{
+  display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;
+  width:100%;max-width:280px;margin:12px 0;
+}
+.mem-suit-grid button{
+  padding:14px 4px;font-size:24px;
+  border-radius:8px;border:1px solid rgba(230,204,133,.3);
+  background:rgba(0,0,0,.25);cursor:pointer;transition:all .15s;
+}
+.mem-suit-grid button.red{color:#e05a4a;}
+.mem-suit-grid button.black{color:#e8e2d0;}
+.mem-suit-grid button:hover{background:rgba(230,204,133,.15);}
+.mem-current-choice{
+  font-size:14px;color:var(--gold-light);margin:8px 0;
+  min-height:20px;font-weight:600;
+}
 .verdict-icon{font-size:44px;line-height:1;}
 .verdict-main{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--cream);}
 .verdict-sub{font-size:14px;opacity:.9;font-family:'JetBrains Mono',monospace;}
@@ -485,8 +526,9 @@ table.dev td.action-tag{font-weight:700;}
   #view-play.playing .action-bar{flex:none;}
   #view-play.playing .table-footer{flex:none;margin-top:8px;}
   body.playing{overflow:hidden;}
-  body.playing #app{padding-top:10px;padding-bottom:0;overflow:hidden;height:100dvh;}
+  body.playing #app{padding-top:10px;padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 8px);overflow:hidden;height:100dvh;}
   body.playing .topbar{margin-bottom:10px;padding-bottom:10px;}
+  #view-play.playing .table-wrap{height:calc(100dvh - 118px - env(safe-area-inset-bottom, 0px) - 8px);}
 
   .felt::before{font-size:8px;top:44%;letter-spacing:.12em;}
   .dealer-zone{top:2%;width:auto;}
@@ -585,6 +627,7 @@ table.dev td.action-tag{font-weight:700;}
     <div class="tabs">
       <button class="tab-btn active" data-tab="play">Table</button>
       <button class="tab-btn" data-tab="count">Comptage</button>
+      <button class="tab-btn" data-tab="memory">Mémoire</button>
       <button class="tab-btn" data-tab="strategy">Stratégie</button>
     </div>
   </div>
@@ -603,7 +646,7 @@ table.dev td.action-tag{font-weight:700;}
         </div>
         <div class="field">
           <label>Autres joueurs (robots)</label>
-          <input type="range" id="cfg-bots" min="0" max="3" value="2">
+          <input type="range" id="cfg-bots" min="0" max="2" value="2">
           <div class="value-line"><span id="cfg-bots-val">2</span> robot(s) à table</div>
         </div>
         <div class="field">
@@ -773,6 +816,65 @@ table.dev td.action-tag{font-weight:700;}
         <div class="stat-box session"><div class="s-label">Erreurs — session</div><div class="s-val" id="ct-session-bad">0</div></div>
         <div class="stat-box alltime"><div class="s-label">Bons — total</div><div class="s-val" id="ct-alltime-good">0</div></div>
         <div class="stat-box alltime"><div class="s-label">Erreurs — total</div><div class="s-val" id="ct-alltime-bad">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: MEMORY ============ -->
+  <div class="view" id="view-memory">
+    <div class="card-panel" id="memory-setup">
+      <h2>Entraînement mémoire</h2>
+      <div class="sub">On te montre les cartes une à une. À la fin, devine la seule carte qui n'a pas été retournée.</div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Niveau</label>
+          <div class="seg" id="mem-level-seg"></div>
+          <div class="value-line" id="mem-level-desc">1 famille — 13 cartes (2 → As d'une même couleur)</div>
+        </div>
+        <div class="field">
+          <label>Vitesse</label>
+          <input type="range" id="mem-speed" min="1" max="5" value="3">
+          <div class="value-line"><span id="mem-speed-val">Normale</span></div>
+        </div>
+      </div>
+      <div class="setup-actions">
+        <button class="btn btn-gold" id="btn-start-memory">Démarrer</button>
+      </div>
+    </div>
+
+    <div class="card-panel hidden" id="memory-session">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h2 style="margin:0;">Session mémoire</h2>
+        <button class="btn btn-outline" id="btn-stop-memory">Arrêter</button>
+      </div>
+      <div class="count-stage" id="mem-stage">
+        <div class="deck-visual" id="mem-deck">
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-label">Sabot</div>
+        </div>
+        <div class="pile-zone" id="mem-pile"></div>
+        <div class="mem-progress" id="mem-progress">
+          <span id="mem-shown">0</span> / <span id="mem-total">0</span>
+        </div>
+        <div class="prompt-overlay" id="mem-prompt-overlay">
+          <h3 id="mem-prompt-title">Quelle est la dernière carte ?</h3>
+          <div class="mem-rank-grid" id="mem-rank-grid"></div>
+          <div class="mem-suit-grid" id="mem-suit-grid" style="display:none;"></div>
+          <div class="mem-current-choice" id="mem-current-choice"></div>
+          <button class="btn btn-outline btn-slim" id="mem-back-btn" style="display:none;">← Changer le rang</button>
+        </div>
+        <div class="verdict-overlay" id="mem-verdict-overlay">
+          <div class="verdict-icon" id="mem-verdict-icon"></div>
+          <div class="verdict-main" id="mem-verdict-main"></div>
+          <div class="verdict-sub" id="mem-verdict-sub"></div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box session"><div class="s-label">Bons — session</div><div class="s-val" id="mem-session-good">0</div></div>
+        <div class="stat-box session"><div class="s-label">Erreurs — session</div><div class="s-val" id="mem-session-bad">0</div></div>
+        <div class="stat-box alltime"><div class="s-label">Bons — total</div><div class="s-val" id="mem-alltime-good">0</div></div>
+        <div class="stat-box alltime"><div class="s-label">Erreurs — total</div><div class="s-val" id="mem-alltime-bad">0</div></div>
       </div>
     </div>
   </div>
@@ -1158,15 +1260,16 @@ function layoutSeats(){
     // don't crowd each other when both accumulate cards.
     const t = n===1 ? 0.5 : i/(n-1);
     let leftPct;
-    if (n === 1) leftPct = 62;
+    if (n === 1) leftPct = 50;
     else if (n === 4) leftPct = [74, 62, 36, 24][i];
     else leftPct = 74 - t*48;
     // stagger heights in a zigzag so neighbouring seats never sit at the same
     // level (prevents card overlap, especially during splits)
     const zig = (i % 2 === 0) ? 0 : 26;
-    const topPct = 55 + zig;
+    // Solo : plus bas vers moi (68% au lieu de 55%). Sinon zigzag habituel.
+    const topPct = (n === 1) ? 66 : (55 + zig);
     const div = document.createElement('div');
-    div.className = 'seat'+(seat.isMe?' me':'');
+    div.className = 'seat'+(seat.isMe?' me':'')+(n===1 && seat.isMe?' solo':'');
     div.style.left = leftPct+'%';
     div.style.top = topPct+'%';
     div.id = 'seat-'+seat.seatNo;
@@ -2091,6 +2194,223 @@ function showVerdict(ok, guess, actualRC){
     setTimeout(()=>{ ov.classList.remove('show'); resolve(); }, ok ? 1300 : 2400);
   });
 }
+
+/* ============================================================
+   MEMORY TAB — deal all cards but one, guess the missing one
+   ============================================================ */
+const MEM_LEVELS = [
+  {id:'fam1',  label:'1 famille',  suits:['♠'],              decks:1, desc:"1 famille — 13 cartes (une seule couleur)"},
+  {id:'fam2',  label:'2 familles', suits:['♠','♥'],          decks:1, desc:"2 familles — 26 cartes (deux couleurs)"},
+  {id:'fam3',  label:'3 familles', suits:['♠','♥','♦'],      decks:1, desc:"3 familles — 39 cartes (trois couleurs)"},
+  {id:'d1',    label:'1 paquet',   suits:null,               decks:1, desc:"1 paquet complet — 52 cartes"},
+  {id:'d2',    label:'2 paquets',  suits:null,               decks:2, desc:"2 paquets — 104 cartes"},
+  {id:'d3',    label:'3 paquets',  suits:null,               decks:3, desc:"3 paquets — 156 cartes"},
+  {id:'d4',    label:'4 paquets',  suits:null,               decks:4, desc:"4 paquets — 208 cartes"},
+  {id:'d5',    label:'5 paquets',  suits:null,               decks:5, desc:"5 paquets — 260 cartes"},
+];
+
+let memLevel = 'fam1';
+const memSpeed = document.getElementById('mem-speed');
+const memSpeedVal = document.getElementById('mem-speed-val');
+const memSpeedLabels = {1:'Très lente',2:'Lente',3:'Normale',4:'Rapide',5:'Très rapide'};
+memSpeed.addEventListener('input', ()=>{
+  memSpeedVal.textContent = memSpeedLabels[memSpeed.value] || 'Normale';
+});
+
+function memSpeedMs(){ return speedMs[memSpeed.value] || 850; }
+
+function buildMemLevelSeg(){
+  const seg = document.getElementById('mem-level-seg');
+  seg.innerHTML = MEM_LEVELS.map(l=>
+    `<button data-level="${l.id}" class="${l.id===memLevel?'active':''}">${l.label}</button>`
+  ).join('');
+  seg.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      memLevel = b.dataset.level;
+      seg.querySelectorAll('button').forEach(x=>x.classList.toggle('active', x.dataset.level===memLevel));
+      const lvl = MEM_LEVELS.find(x=>x.id===memLevel);
+      document.getElementById('mem-level-desc').textContent = lvl.desc;
+    });
+  });
+}
+buildMemLevelSeg();
+memSpeedVal.textContent = memSpeedLabels[memSpeed.value] || 'Normale';
+
+let memAllTimeStats = storeGet('memory-alltime') || {good:0, bad:0};
+let memSessionStats = {good:0, bad:0};
+let memRunning = false;
+let memAbort = false;
+
+function memBuildDeck(){
+  const lvl = MEM_LEVELS.find(x=>x.id===memLevel);
+  const suits = lvl.suits || ['♠','♥','♦','♣'];
+  const cards = [];
+  for(let d=0; d<lvl.decks; d++){
+    for(const s of suits){
+      for(const r of RANKS){
+        cards.push({rank:r, suit:s});
+      }
+    }
+  }
+  // Fisher-Yates
+  for(let i=cards.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  return cards;
+}
+
+function memUpdateStats(){
+  document.getElementById('mem-session-good').textContent = memSessionStats.good;
+  document.getElementById('mem-session-bad').textContent = memSessionStats.bad;
+  document.getElementById('mem-alltime-good').textContent = memAllTimeStats.good;
+  document.getElementById('mem-alltime-bad').textContent = memAllTimeStats.bad;
+}
+
+function memRenderPileCard(card){
+  const pile = document.getElementById('mem-pile');
+  const cc = makeFlipCard(card, 0, -180);
+  pile.innerHTML = '';
+  pile.appendChild(cc);
+  // trigger flip animation
+  requestAnimationFrame(()=>{
+    cc.classList.add('in');
+    setTimeout(()=> cc.classList.add('flipped'), 90);
+  });
+}
+
+async function memAskCard(availableSuits){
+  return new Promise(resolve=>{
+    const ov = document.getElementById('mem-prompt-overlay');
+    const rankGrid = document.getElementById('mem-rank-grid');
+    const suitGrid = document.getElementById('mem-suit-grid');
+    const currentChoice = document.getElementById('mem-current-choice');
+    const backBtn = document.getElementById('mem-back-btn');
+    // Fill rank buttons
+    rankGrid.innerHTML = RANKS.map(r=>`<button data-rank="${r}">${r}</button>`).join('');
+    // Fill suit buttons — restricted to available suits (for 1-family levels)
+    const suitClass = s => (s==='♥'||s==='♦') ? 'red' : 'black';
+    suitGrid.innerHTML = availableSuits.map(s=>
+      `<button data-suit="${s}" class="${suitClass(s)}">${s}</button>`
+    ).join('');
+    const singleSuit = availableSuits.length === 1;
+    let chosenRank = null;
+
+    const cleanup = () => {
+      rankGrid.querySelectorAll('button').forEach(b=>b.replaceWith(b.cloneNode(true)));
+      suitGrid.querySelectorAll('button').forEach(b=>b.replaceWith(b.cloneNode(true)));
+      backBtn.replaceWith(backBtn.cloneNode(true));
+    };
+    const finish = (rank, suit) => {
+      ov.classList.remove('show');
+      currentChoice.textContent = '';
+      rankGrid.style.display = 'grid';
+      suitGrid.style.display = 'none';
+      backBtn.style.display = 'none';
+      resolve({rank, suit});
+    };
+    const showStep2 = (rank) => {
+      chosenRank = rank;
+      currentChoice.textContent = 'Rang choisi : ' + rank + ' — choisis la couleur';
+      rankGrid.style.display = 'none';
+      suitGrid.style.display = 'grid';
+      document.getElementById('mem-back-btn').style.display = 'inline-block';
+    };
+    const showStep1 = () => {
+      chosenRank = null;
+      currentChoice.textContent = '';
+      rankGrid.style.display = 'grid';
+      suitGrid.style.display = 'none';
+      document.getElementById('mem-back-btn').style.display = 'none';
+    };
+
+    rankGrid.style.display = 'grid';
+    suitGrid.style.display = 'none';
+    backBtn.style.display = 'none';
+    currentChoice.textContent = '';
+    ov.classList.add('show');
+
+    rankGrid.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const r = b.dataset.rank;
+        if(singleSuit){
+          finish(r, availableSuits[0]);
+        } else {
+          showStep2(r);
+        }
+      });
+    });
+    document.getElementById('mem-suit-grid').querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{ finish(chosenRank, b.dataset.suit); });
+    });
+    document.getElementById('mem-back-btn').addEventListener('click', showStep1);
+  });
+}
+
+function memShowVerdict(ok, guess, actual){
+  return new Promise(resolve=>{
+    const ov = document.getElementById('mem-verdict-overlay');
+    document.getElementById('mem-verdict-icon').textContent = ok ? '✅' : '❌';
+    document.getElementById('mem-verdict-main').textContent = ok ? 'Correct !' : 'Raté';
+    document.getElementById('mem-verdict-sub').textContent = ok
+      ? ('Carte manquante : ' + actual.rank + actual.suit)
+      : ('Ta réponse : ' + guess.rank + guess.suit + '   —   Réel : ' + actual.rank + actual.suit);
+    ov.classList.remove('good','bad'); ov.classList.add('show', ok?'good':'bad');
+    setTimeout(()=>{ ov.classList.remove('show'); resolve(); }, ok ? 1500 : 2800);
+  });
+}
+
+async function memRunSession(){
+  memRunning = true;
+  memAbort = false;
+  memSessionStats = {good:0, bad:0};
+  memUpdateStats();
+  document.getElementById('memory-setup').classList.add('hidden');
+  document.getElementById('memory-session').classList.remove('hidden');
+  const lvl = MEM_LEVELS.find(x=>x.id===memLevel);
+  const availableSuits = lvl.suits || ['♠','♥','♦','♣'];
+
+  while(!memAbort){
+    const deck = memBuildDeck();
+    const target = deck.pop();   // the card NOT shown
+    const total = deck.length + 1;
+    document.getElementById('mem-total').textContent = total;
+    document.getElementById('mem-shown').textContent = 0;
+    document.getElementById('mem-pile').innerHTML = '';
+    // Deal the deck.length cards one by one
+    for(let i=0; i<deck.length; i++){
+      if(memAbort) break;
+      memRenderPileCard(deck[i]);
+      document.getElementById('mem-shown').textContent = i+1;
+      await sleep(memSpeedMs());
+    }
+    if(memAbort) break;
+    // Ask the user
+    const guess = await memAskCard(availableSuits);
+    if(memAbort) break;
+    const ok = guess.rank === target.rank && guess.suit === target.suit;
+    if(ok){ memSessionStats.good++; memAllTimeStats.good++; }
+    else { memSessionStats.bad++; memAllTimeStats.bad++; }
+    storeSet('memory-alltime', memAllTimeStats);
+    memUpdateStats();
+    await memShowVerdict(ok, guess, target);
+  }
+  memRunning = false;
+}
+
+document.getElementById('btn-start-memory').addEventListener('click', ()=>{
+  memUpdateStats();
+  memRunSession();
+});
+document.getElementById('btn-stop-memory').addEventListener('click', ()=>{
+  memAbort = true;
+  // Hide any active overlay so the promise can resolve visually
+  document.getElementById('mem-prompt-overlay').classList.remove('show');
+  document.getElementById('mem-verdict-overlay').classList.remove('show');
+  document.getElementById('memory-session').classList.add('hidden');
+  document.getElementById('memory-setup').classList.remove('hidden');
+});
+memUpdateStats();
 
 /* ============================================================
    STRATEGY TAB — RENDER TABLES
