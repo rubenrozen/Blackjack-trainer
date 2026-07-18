@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -54,205 +53,204 @@ body{
 h1,h2,h3,.display{font-family:'Fraunces',serif;}
 .mono{font-family:'JetBrains Mono',monospace;}
 
-/* ––––– App shell ––––– */
+/* ---------- App shell ---------- */
 #app{max-width:1180px;margin:0 auto;padding:18px 16px 60px;overflow-x:hidden;}
 .topbar{
-display:flex;align-items:baseline;justify-content:space-between;
-padding:6px 4px 18px;border-bottom:1px solid rgba(230,204,133,.18);
-margin-bottom:18px;
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:6px 4px 18px;border-bottom:1px solid rgba(230,204,133,.18);
+  margin-bottom:18px;
 }
 .brand{display:flex;align-items:center;gap:10px;}
 .brand .mark{
-width:36px;height:36px;border-radius:50%;
-background:conic-gradient(from 180deg, var(–gold), var(–gold-light), var(–gold));
-display:flex;align-items:center;justify-content:center;
-color:var(–ink);font-weight:700;font-family:‘Fraunces’,serif;font-size:13px;
-box-shadow:0 2px 8px rgba(0,0,0,.4);white-space:nowrap;
+  width:36px;height:36px;border-radius:50%;
+  background:conic-gradient(from 180deg, var(--gold), var(--gold-light), var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink);font-weight:700;font-family:'Fraunces',serif;font-size:13px;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);white-space:nowrap;
 }
-.brand h1{font-size:22px;margin:0;font-weight:600;letter-spacing:.02em;color:var(–gold-light);}
-.brand .tag{font-size:11px;color:var(–cream);opacity:.55;letter-spacing:.08em;text-transform:uppercase;margin-top:1px;}
+.brand h1{font-size:22px;margin:0;font-weight:600;letter-spacing:.02em;color:var(--gold-light);}
+.brand .tag{font-size:11px;color:var(--cream);opacity:.55;letter-spacing:.08em;text-transform:uppercase;margin-top:1px;}
 
 .tabs{display:flex;gap:4px;background:rgba(0,0,0,.25);padding:4px;border-radius:12px;}
 .tab-btn{
-border:none;background:transparent;color:var(–cream);opacity:.6;
-padding:9px 16px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;
-font-family:‘Inter’,sans-serif;letter-spacing:.01em;transition:all .18s;
+  border:none;background:transparent;color:var(--cream);opacity:.6;
+  padding:9px 16px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;letter-spacing:.01em;transition:all .18s;
 }
 .tab-btn:hover{opacity:.85;}
-.tab-btn.active{background:var(–gold);color:var(–ink);opacity:1;box-shadow:0 3px 10px rgba(0,0,0,.3);}
+.tab-btn.active{background:var(--gold);color:var(--ink);opacity:1;box-shadow:0 3px 10px rgba(0,0,0,.3);}
 
 .view{display:none;animation:fadein .25s ease;}
 .view.active{display:block;}
 @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 
-button{cursor:pointer;font-family:‘Inter’,sans-serif;}
+button{cursor:pointer;font-family:'Inter',sans-serif;}
 
-/* ––––– Écran d’accueil ––––– */
+/* ---------- Écran d'accueil ---------- */
 #welcome{
-position:fixed;inset:0;z-index:100;
-background:radial-gradient(ellipse at 50% 20%, #163d30 0%, #081a14 75%);
-display:flex;align-items:center;justify-content:center;padding:28px;
-padding-top:calc(28px + env(safe-area-inset-top));
-animation:fadein .4s ease;
+  position:fixed;inset:0;z-index:100;
+  background:radial-gradient(ellipse at 50% 20%, #163d30 0%, #081a14 75%);
+  display:flex;align-items:center;justify-content:center;padding:28px;
+  padding-top:calc(28px + env(safe-area-inset-top));
+  animation:fadein .4s ease;
 }
 #welcome.hide{opacity:0;pointer-events:none;transition:opacity .45s ease;}
 .welcome-inner{
-display:flex;flex-direction:column;align-items:center;text-align:center;
-max-width:440px;width:100%;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  max-width:440px;width:100%;
 }
 .welcome-hero{
-width:100%;max-width:340px;aspect-ratio:1/1;border-radius:22px;overflow:hidden;
-border:1px solid rgba(230,204,133,.3);box-shadow:var(–shadow-deep);
-margin-bottom:26px;background:linear-gradient(160deg,#12352a,#0a1f18);
-display:flex;align-items:center;justify-content:center;
+  width:100%;max-width:340px;aspect-ratio:1/1;border-radius:22px;overflow:hidden;
+  border:1px solid rgba(230,204,133,.3);box-shadow:var(--shadow-deep);
+  margin-bottom:26px;background:linear-gradient(160deg,#12352a,#0a1f18);
+  display:flex;align-items:center;justify-content:center;
 }
 .welcome-hero img{width:100%;height:100%;object-fit:cover;display:block;}
 .welcome-fallback{display:none;width:100%;height:100%;align-items:center;justify-content:center;}
 .welcome-title{
-font-family:‘Fraunces’,serif;font-size:40px;font-weight:600;margin:0;
-color:var(–gold-light);letter-spacing:.01em;line-height:1;
+  font-family:'Fraunces',serif;font-size:40px;font-weight:600;margin:0;
+  color:var(--gold-light);letter-spacing:.01em;line-height:1;
 }
 .welcome-tag{font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:8px;}
 .welcome-sub{font-size:13.5px;opacity:.75;margin-top:14px;}
 .welcome-enter{margin-top:30px;padding:14px 44px;font-size:16px;border-radius:12px;}
 
-button{cursor:pointer;font-family:‘Inter’,sans-serif;}
+button{cursor:pointer;font-family:'Inter',sans-serif;}
 .btn{
-border:none;border-radius:9px;padding:10px 18px;font-weight:600;font-size:13.5px;
-background:rgba(255,255,255,.08);color:var(–cream);transition:all .15s;
+  border:none;border-radius:9px;padding:10px 18px;font-weight:600;font-size:13.5px;
+  background:rgba(255,255,255,.08);color:var(--cream);transition:all .15s;
 }
 .btn:hover{background:rgba(255,255,255,.16);}
 .btn:disabled{opacity:.3;cursor:not-allowed;}
-.btn-gold{background:var(–gold);color:var(–ink);}
-.btn-gold:hover{background:var(–gold-light);}
-.btn-outline{background:transparent;border:1px solid rgba(230,204,133,.4);color:var(–gold-light);}
+.btn-gold{background:var(--gold);color:var(--ink);}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-outline{background:transparent;border:1px solid rgba(230,204,133,.4);color:var(--gold-light);}
 .btn-outline:hover{background:rgba(230,204,133,.1);}
 
-/* ––––– Setup card ––––– */
+/* ---------- Setup card ---------- */
 .card-panel{
-background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-border:1px solid rgba(230,204,133,.15);
-border-radius:16px;padding:22px 24px;margin-bottom:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid rgba(230,204,133,.15);
+  border-radius:16px;padding:22px 24px;margin-bottom:18px;
 }
-.card-panel h2{margin:0 0 4px;font-size:19px;color:var(–gold-light);font-weight:600;}
+.card-panel h2{margin:0 0 4px;font-size:19px;color:var(--gold-light);font-weight:600;}
 .card-panel .sub{font-size:13px;opacity:.6;margin-bottom:16px;}
 .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
 .field{display:flex;flex-direction:column;gap:8px;}
 .field label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.65;font-weight:600;}
-.field .value-line{font-size:13px;font-family:‘JetBrains Mono’,monospace;color:var(–gold-light);}
+.field .value-line{font-size:13px;font-family:'JetBrains Mono',monospace;color:var(--gold-light);}
 input[type=range]{
--webkit-appearance:none;height:5px;border-radius:3px;background:rgba(255,255,255,.15);
+  -webkit-appearance:none;height:5px;border-radius:3px;background:rgba(255,255,255,.15);
 }
 input[type=range]::-webkit-slider-thumb{
--webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(–gold);
-border:2px solid var(–felt-dark);cursor:pointer;
+  -webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--gold);
+  border:2px solid var(--felt-dark);cursor:pointer;
 }
 .seg{display:flex;gap:6px;flex-wrap:wrap;}
 .seg button{
-border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);color:var(–cream);
-padding:7px 13px;border-radius:8px;font-size:12.5px;font-weight:600;opacity:.7;
+  border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);color:var(--cream);
+  padding:7px 13px;border-radius:8px;font-size:12.5px;font-weight:600;opacity:.7;
 }
-.seg button.sel{background:var(–gold);color:var(–ink);border-color:var(–gold);opacity:1;}
+.seg button.sel{background:var(--gold);color:var(--ink);border-color:var(--gold);opacity:1;}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
-padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.08);}
+  padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.08);}
 .toggle-row:last-child{border-bottom:none;}
 .toggle-row .lbl{font-size:13.5px;}
 .toggle-row .lbl .hint{display:block;font-size:11px;opacity:.5;margin-top:2px;font-weight:400;}
 .switch{width:42px;height:24px;border-radius:20px;background:rgba(255,255,255,.15);position:relative;border:none;flex:none;}
-.switch.on{background:var(–good);}
-.switch::after{content:’’;position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s;}
+.switch.on{background:var(--good);}
+.switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s;}
 .switch.on::after{left:21px;}
 
-/* ––––– Table (jeu) ––––– */
+/* ---------- Table (jeu) ---------- */
 .table-wrap{position:relative;}
 .felt{
-position:relative;
-background: var(–table-bg,
-radial-gradient(ellipse at 50% 30%, var(–felt-light) 0%, var(–felt) 55%, var(–felt-dark) 100%));
-border-radius:50%/38%;
-border:14px solid var(–table-rail, var(–rail));
-box-shadow:var(–shadow-deep), inset 0 0 60px rgba(0,0,0,.35);
-min-height:520px;
-padding:20px;
-overflow:hidden;
-transition:background .6s ease, border-color .4s ease;
+  position:relative;
+  background: var(--table-bg,
+    radial-gradient(ellipse at 50% 30%, var(--felt-light) 0%, var(--felt) 55%, var(--felt-dark) 100%));
+  border-radius:50%/38%;
+  border:14px solid var(--table-rail, var(--rail));
+  box-shadow:var(--shadow-deep), inset 0 0 60px rgba(0,0,0,.35);
+  min-height:520px;
+  padding:20px;
+  overflow:hidden;
+  transition:background .6s ease, border-color .4s ease;
 }
 .felt-illus{
-position:absolute;inset:0;pointer-events:none;
-opacity:1;
-transition:opacity .5s ease;
-border-radius:inherit;overflow:hidden;
+  position:absolute;inset:0;pointer-events:none;
+  opacity:1;
+  transition:opacity .5s ease;
+  border-radius:inherit;overflow:hidden;
 }
 .felt-illus svg, .felt-illus img{width:100%;height:100%;display:block;object-fit:cover;}
 .felt::before{
-content:‘UNGAR'S ACES • PAIE 3:2 • ASSURANCE 2:1’;
-position:absolute;top:41%;left:50%;transform:translateX(-50%);
-font-size:11px;letter-spacing:.18em;color:rgba(230,204,133,.22);font-weight:600;
-white-space:nowrap;text-align:center;pointer-events:none;
+  content:'UNGAR\'S ACES • PAIE 3:2 • ASSURANCE 2:1';
+  position:absolute;top:41%;left:50%;transform:translateX(-50%);
+  font-size:11px;letter-spacing:.18em;color:rgba(230,204,133,.22);font-weight:600;
+  white-space:nowrap;text-align:center;pointer-events:none;
 }
 .dealer-zone{position:absolute;top:6%;left:50%;transform:translateX(-50%);text-align:center;width:220px;}
 .dealer-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.55;margin-bottom:6px;}
 .hand-cards{display:flex;justify-content:center;min-height:96px;}
-.hand-cards.stacked .card{margin-left:-20px;}
-.hand-cards.stacked .card:first-child{margin-left:0;}
+/* dealer card layout handled by layoutHandCards() in JS */
 .card{
-width:66px;height:94px;border-radius:8px;
-background:#fbf7ec;
-box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.2);
-position:relative;overflow:hidden;
+  width:66px;height:94px;border-radius:8px;
+  background:#fbf7ec;
+  box-shadow:0 5px 14px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.2);
+  position:relative;overflow:hidden;
 }
 .card.dealing{animation:dealCard .26s ease;}
 .card svg,.card img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;}
 .card.back{background:#f5efe0;}
 @keyframes dealCard{from{opacity:0;transform:translateY(-18px) scale(.85);}to{opacity:1;transform:none;}}
-.hand-total{font-size:12px;margin-top:6px;font-family:‘JetBrains Mono’,monospace;color:var(–gold-light);opacity:.9;}
+.hand-total{font-size:12px;margin-top:6px;font-family:'JetBrains Mono',monospace;color:var(--gold-light);opacity:.9;}
 
 .seats-ring{position:absolute;inset:0;}
 .seat{
-position:absolute;width:140px;text-align:center;
-/* Ancrage par le HAUT : quand une main grandit (tirages, splits), elle ne
-peut que pousser vers le bas — elle ne remonte jamais vers la banque. */
-transform:translate(-50%,0);
+  position:absolute;width:140px;text-align:center;
+  /* Ancrage par le HAUT : quand une main grandit (tirages, splits), elle ne
+     peut que pousser vers le bas — elle ne remonte jamais vers la banque. */
+  transform:translate(-50%,0);
 }
 .seat .seat-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:5px;}
-.seat.me .seat-label{color:var(–gold-light);opacity:.9;font-weight:700;}
+.seat.me .seat-label{color:var(--gold-light);opacity:.9;font-weight:700;}
 .seat.me{filter:drop-shadow(0 0 10px rgba(230,204,133,.25));}
 .seat .hand-cards{transform:scale(.85);min-height:70px;}
 .seat.me .hand-cards{transform:scale(1);}
 .seat-msg{
-font-size:11px;margin-top:4px;padding:3px 8px;border-radius:6px;display:inline-block;
-font-weight:600;background:rgba(0,0,0,.3);
+  font-size:11px;margin-top:4px;padding:3px 8px;border-radius:6px;display:inline-block;
+  font-weight:600;background:rgba(0,0,0,.3);
 }
 .seat-msg.good{color:#a6e6b0;}
 .seat-msg.bad{color:#ffb4ab;}
 
 /* when a seat splits, its hands stack vertically at its OWN position (no more
-translating the seat upward — the user prefers seats stay put). */
+   translating the seat upward — the user prefers seats stay put). */
 .seat.splitting{z-index:6;}
-.hand-cards.stack{flex-direction:column !important;align-items:center;gap:4px;}
-.hand-cards.stack .card{width:56px;height:79px;}
+.hand-cards.stack{flex-direction:column !important;align-items:center;gap:3px;}
+.hand-cards.stack .card{width:54px;height:76px;}
 /* 3-4 mains : 2 colonnes pour rester dans la hauteur du feutre.
-Dans ce mode, le mini-total passe SOUS les cartes (slot en colonne)
-pour que deux slots tiennent côte à côte. */
+   Dans ce mode, le mini-total passe SOUS les cartes (slot en colonne)
+   pour que deux slots tiennent côte à côte. */
 .hand-cards.stack.s3,.hand-cards.stack.s4{
-flex-direction:row !important;flex-wrap:wrap;justify-content:center;
-column-gap:8px;row-gap:4px;
+  flex-direction:row !important;flex-wrap:wrap;justify-content:center;
+  column-gap:8px;row-gap:4px;
 }
 .hand-cards.stack.s3 .card,.hand-cards.stack.s4 .card{width:40px;height:56px;}
 .hand-cards.stack.s3 .hand-slot,.hand-cards.stack.s4 .hand-slot{
-flex-direction:column;gap:2px;
+  flex-direction:column;gap:2px;
 }
 .hand-cards.stack.s3 .hand-mini-total,.hand-cards.stack.s4 .hand-mini-total{
-font-size:10.5px;padding:1px 6px;min-width:26px;
+  font-size:10.5px;padding:1px 6px;min-width:26px;
 }
 
 /* Siège de la rangée BASSE (siège 2 quand 3+ joueurs) : les mains splittées
-se placent côte à côte à l’horizontal (l’espace vertical y est compté),
-avec le mini-total sous chaque main. */
+   se placent côte à côte à l'horizontal (l'espace vertical y est compté),
+   avec le mini-total sous chaque main. */
 .seat.bottom-row .hand-cards.stack{
-flex-direction:row !important;flex-wrap:nowrap;
-justify-content:center;align-items:flex-start;
-column-gap:10px;
+  flex-direction:row !important;flex-wrap:nowrap;
+  justify-content:center;align-items:flex-start;
+  column-gap:10px;
 }
 .seat.bottom-row .hand-cards.stack .hand-slot{flex-direction:column;gap:3px;}
 .seat.bottom-row .hand-cards.stack .card{width:52px;height:73px;}
@@ -262,18 +260,18 @@ column-gap:10px;
 .seat.bottom-row .hand-cards.stack.s4{column-gap:6px;}
 
 /* Chaque main = un slot horizontal : cartes puis mini-total à DROITE.
-Le mini-total est visible dès que ça se complique (split ou 4+ cartes). */
+   Le mini-total est visible dès que ça se complique (split ou 4+ cartes). */
 .hand-slot{display:flex;flex-direction:row;align-items:center;gap:5px;}
 .hand-mini-total{
-font-size:12px;font-weight:700;
-color:var(–gold-light);
-background:rgba(0,0,0,.45);
-padding:2px 8px;border-radius:6px;
-font-family:‘JetBrains Mono’, monospace;
-min-width:30px;text-align:center;
-letter-spacing:.02em;
-display:none; /* activé en split ou main chargée (JS + CSS) */
-white-space:nowrap;
+  font-size:12px;font-weight:700;
+  color:var(--gold-light);
+  background:rgba(0,0,0,.45);
+  padding:2px 8px;border-radius:6px;
+  font-family:'JetBrains Mono', monospace;
+  min-width:30px;text-align:center;
+  letter-spacing:.02em;
+  display:none; /* activé en split ou main chargée (JS + CSS) */
+  white-space:nowrap;
 }
 .hand-cards.stack .hand-mini-total,
 .hand-cards.crowded .hand-mini-total{display:inline-block;}
@@ -284,19 +282,19 @@ white-space:nowrap;
 
 /* on-table decision score counter */
 .score-overlay{
-position:absolute;top:14px;right:14px;z-index:5;text-align:right;
-background:rgba(6,20,15,.55);border:1px solid rgba(230,204,133,.22);
-border-radius:11px;padding:7px 12px;backdrop-filter:blur(3px);min-width:86px;
+  position:absolute;top:14px;right:14px;z-index:5;text-align:right;
+  background:rgba(6,20,15,.55);border:1px solid rgba(230,204,133,.22);
+  border-radius:11px;padding:7px 12px;backdrop-filter:blur(3px);min-width:86px;
 }
 .score-overlay .so-label{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:2px;}
-.score-overlay .so-pct{font-family:‘JetBrains Mono’,monospace;font-size:20px;font-weight:700;color:var(–gold-light);line-height:1.05;}
+.score-overlay .so-pct{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--gold-light);line-height:1.05;}
 .score-overlay .so-detail{font-size:10px;margin-top:2px;opacity:.8;}
 .score-overlay .so-good{color:#a6e6b0;}
 .score-overlay .so-bad{color:#ffb4ab;}
 
 .feedback-banner{
-margin-top:16px;padding:13px 18px;border-radius:11px;font-size:14px;font-weight:600;
-display:none;align-items:center;gap:10px;
+  margin-top:16px;padding:13px 18px;border-radius:11px;font-size:14px;font-weight:600;
+  display:none;align-items:center;gap:10px;
 }
 .feedback-banner.show{display:flex;}
 .feedback-banner.good{background:rgba(63,125,79,.22);border:1px solid rgba(63,125,79,.5);color:#b7ecc0;}
@@ -305,340 +303,328 @@ display:none;align-items:center;gap:10px;
 
 .action-bar{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
 .action-bar button{min-width:96px;font-size:14px;padding:12px 18px;border-radius:10px;}
-.act-hit{background:var(–blue);color:#fff;}
-.act-stand{background:var(–red);color:#fff;}
-.act-double{background:var(–gold);color:var(–ink);}
-.act-split{background:var(–purple);color:#fff;}
-.act-surrender{background:rgba(255,255,255,.1);color:var(–cream);}
+.act-hit{background:var(--blue);color:#fff;}
+.act-stand{background:var(--red);color:#fff;}
+.act-double{background:var(--gold);color:var(--ink);}
+.act-split{background:var(--purple);color:#fff;}
+.act-surrender{background:rgba(255,255,255,.1);color:var(--cream);}
 .action-bar button:disabled{opacity:.25;}
 
 /* metrics overlay (inside felt) */
 .metrics-rail{
-position:absolute;top:14px;left:14px;z-index:5;
-display:flex;flex-direction:column;gap:7px;
+  position:absolute;top:14px;left:14px;z-index:5;
+  display:flex;flex-direction:column;gap:7px;
 }
 .metric-chip{
-background:rgba(6,20,15,.55);border:1px solid rgba(230,204,133,.22);
-border-radius:11px;padding:7px 12px;text-align:center;position:relative;cursor:default;
-backdrop-filter:blur(3px);min-width:78px;
+  background:rgba(6,20,15,.55);border:1px solid rgba(230,204,133,.22);
+  border-radius:11px;padding:7px 12px;text-align:center;position:relative;cursor:default;
+  backdrop-filter:blur(3px);min-width:78px;
 }
 .metric-chip .m-label{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:2px;}
-.metric-chip .m-val{font-family:‘JetBrains Mono’,monospace;font-size:20px;font-weight:700;color:var(–gold-light);line-height:1.05;}
+.metric-chip .m-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--gold-light);line-height:1.05;}
 .metric-chip.secret{cursor:pointer;}
 .metric-chip.secret .m-val{filter:blur(6px);user-select:none;transition:filter .15s;}
 .metric-chip.secret.revealed .m-val{filter:none;}
 .metric-chip.secret .m-hint{font-size:8.5px;opacity:.4;margin-top:1px;}
 
 .table-footer{
-display:flex;justify-content:space-between;align-items:center;
-gap:10px;margin-top:12px;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;margin-top:12px;
 }
 .btn-slim{padding:9px 14px !important;font-size:13px !important;}
 .btn-ambiance{
-background:rgba(0,0,0,.35);border:1px solid rgba(230,204,133,.35);
-color:var(–gold-light);border-radius:8px;padding:9px 12px;font-size:12.5px;font-weight:600;
-letter-spacing:.03em;cursor:pointer;white-space:nowrap;
+  background:rgba(0,0,0,.35);border:1px solid rgba(230,204,133,.35);
+  color:var(--gold-light);border-radius:8px;padding:9px 12px;font-size:12.5px;font-weight:600;
+  letter-spacing:.03em;cursor:pointer;white-space:nowrap;
 }
 .btn-ambiance:hover{background:rgba(0,0,0,.55);}
 .theme-modal-overlay{
-position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
-display:none;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);
+  position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+  display:none;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);
 }
 .theme-modal-overlay.show{display:flex;}
 .theme-modal{
-width:100%;max-width:600px;background:#111c17;border-radius:20px 20px 0 0;
-padding:20px 16px 28px;border-top:1px solid rgba(230,204,133,.2);
+  width:100%;max-width:600px;background:#111c17;border-radius:20px 20px 0 0;
+  padding:20px 16px 28px;border-top:1px solid rgba(230,204,133,.2);
 }
-.theme-modal h3{font-family:‘Fraunces’,serif;margin:0 0 14px;color:var(–gold-light);font-size:17px;}
+.theme-modal h3{font-family:'Fraunces',serif;margin:0 0 14px;color:var(--gold-light);font-size:17px;}
 .theme-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin:6px 0 8px;font-weight:600;}
 .theme-modal .theme-section-title:first-of-type{margin-top:0;}
 .theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-bottom:14px;}
 .theme-swatch{
-border-radius:12px;aspect-ratio:1/0.65;cursor:pointer;position:relative;overflow:hidden;
-border:2px solid transparent;transition:border-color .15s,transform .1s;
+  border-radius:12px;aspect-ratio:1/0.65;cursor:pointer;position:relative;overflow:hidden;
+  border:2px solid transparent;transition:border-color .15s,transform .1s;
 }
 .theme-swatch:hover{transform:scale(1.04);}
-.theme-swatch.active{border-color:var(–gold-light);}
+.theme-swatch.active{border-color:var(--gold-light);}
 .theme-swatch .th-rail{position:absolute;inset:0;border-radius:10px;border:5px solid;}
 .theme-swatch .th-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:9.5px;color:#fff;font-weight:600;letter-spacing:.04em;text-shadow:0 1px 3px rgba(0,0,0,.7);}
-.theme-modal-close{display:block;margin:16px auto 0;background:rgba(255,255,255,.08);border:none;color:var(–cream);border-radius:9px;padding:10px 28px;font-size:14px;cursor:pointer;}
+.theme-modal-close{display:block;margin:16px auto 0;background:rgba(255,255,255,.08);border:none;color:var(--cream);border-radius:9px;padding:10px 28px;font-size:14px;cursor:pointer;}
 .setup-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
 .hidden{display:none !important;}
 
-/* ––––– Comptage tab ––––– */
+/* ---------- Comptage tab ---------- */
 .count-stage{
-background:radial-gradient(ellipse at 50% 38%, var(–felt-light), var(–felt-dark));
-border-radius:18px;border:1px solid rgba(230,204,133,.15);
-min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-position:relative;padding:20px;perspective:1100px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 38%, var(--felt-light), var(--felt-dark));
+  border-radius:18px;border:1px solid rgba(230,204,133,.15);
+  min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;padding:20px;perspective:1100px;overflow:hidden;
 }
 /* the deck / shoe */
 .deck-visual{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:96px;height:138px;}
 .count-stage.table-mode .deck-visual{top:14px;left:14px;transform:none;width:56px;height:80px;}
 .count-stage.table-mode .deck-label{display:none;}
 .deck-card{
-position:absolute;inset:0;border-radius:8px;
-background:#f5efe0;
-box-shadow:0 3px 8px rgba(0,0,0,.4);
-overflow:hidden;
+  position:absolute;inset:0;border-radius:8px;
+  background:#f5efe0;
+  box-shadow:0 3px 8px rgba(0,0,0,.4);
+  overflow:hidden;
 }
 .deck-card svg,.deck-card img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;}
 .deck-card:nth-child(1){transform:translate(-3px,-3px);}
 .deck-card:nth-child(2){transform:translate(-1.5px,-1.5px);}
 .deck-card:nth-child(4){transform:translate(3px,3px);}
 .deck-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
-font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.45;color:var(–gold-light);white-space:nowrap;}
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.45;color:var(--gold-light);white-space:nowrap;}
 
 .flash-card-zone{min-height:186px;display:flex;align-items:flex-end;justify-content:center;margin-top:120px;}
 
-/* –– shared flip card (used by pile + table) –– */
+/* ---- shared flip card (used by pile + table) ---- */
 .cc{position:absolute;transform-style:preserve-3d;}
 .cc .flip{
-width:100%;height:100%;position:relative;transform-style:preserve-3d;
-animation:cardIn .3s cubic-bezier(.25,.9,.3,1) both;
+  width:100%;height:100%;position:relative;transform-style:preserve-3d;
+  animation:cardIn .3s cubic-bezier(.25,.9,.3,1) both;
 }
 .cc.closing .flip{animation:cardOut .32s cubic-bezier(.4,0,.6,1) both;}
 .cc .face{
-position:absolute;inset:0;border-radius:8px;backface-visibility:hidden;
-overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.4);
+  position:absolute;inset:0;border-radius:8px;backface-visibility:hidden;
+  overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.4);
 }
 .cc .face.front{background:#fbf7ec;}
 .cc .face.back{transform:rotateY(180deg);background:#f5efe0;}
 .cc .face svg,.cc .face img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;}
 /* smooth continuous deal: slides down from the deck while flipping face-up, eases to rest, stays */
 @keyframes cardIn{
-0%   {transform:translate(var(–fromX,0), var(–fromY,-140px)) scale(.82) rotateY(180deg);opacity:0;}
-30%  {opacity:1;}
-100% {transform:translate(0,0) scale(1) rotateY(0deg);opacity:1;}
+  0%   {transform:translate(var(--fromX,0), var(--fromY,-140px)) scale(.82) rotateY(180deg);opacity:0;}
+  30%  {opacity:1;}
+  100% {transform:translate(0,0) scale(1) rotateY(0deg);opacity:1;}
 }
 /* closing: card flips back face-down and lifts away */
 @keyframes cardOut{
-0%   {transform:translate(0,0) rotateY(0deg);opacity:1;}
-100% {transform:translate(0,-16px) scale(.9) rotateY(180deg);opacity:0;}
+  0%   {transform:translate(0,0) rotateY(0deg);opacity:1;}
+  100% {transform:translate(0,-16px) scale(.9) rotateY(180deg);opacity:0;}
 }
 
-/* –– Flux mode: a growing pile –– */
+/* ---- Flux mode: a growing pile ---- */
 .pile-zone{position:absolute;top:170px;left:50%;transform:translateX(-50%);width:118px;height:168px;}
 .pile-zone .cc{width:118px;height:168px;inset:0;}
 
-/* –– Table mode –– */
+/* ---- Table mode ---- */
 .ct-table{position:absolute;inset:0;display:none;}
 .ct-table.show{display:block;}
-.ct-seat-label{position:absolute;font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.5;color:var(–cream);white-space:nowrap;transform:translateX(-50%);}
+.ct-seat-label{position:absolute;font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.5;color:var(--cream);white-space:nowrap;transform:translateX(-50%);}
 .ct-table .cc{width:52px;height:74px;}
 
 .count-progress{position:absolute;bottom:14px;left:14px;right:14px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
-.count-progress .bar{height:100%;background:var(–gold);width:0%;transition:width .1s linear;}
+.count-progress .bar{height:100%;background:var(--gold);width:0%;transition:width .1s linear;}
 .prompt-overlay{
-position:absolute;inset:0;background:rgba(6,20,15,.88);border-radius:18px;
-display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-backdrop-filter:blur(2px);
+  position:absolute;inset:0;background:rgba(6,20,15,.88);border-radius:18px;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  backdrop-filter:blur(2px);
 }
 .prompt-overlay.show{display:flex;}
 .verdict-overlay{
-position:absolute;inset:0;border-radius:18px;
-display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;
-backdrop-filter:blur(3px);text-align:center;padding:24px;
+  position:absolute;inset:0;border-radius:18px;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  backdrop-filter:blur(3px);text-align:center;padding:24px;
 }
 .verdict-overlay.show{display:flex;}
 .verdict-overlay.good{background:rgba(20,60,40,.9);}
 .verdict-overlay.bad{background:rgba(70,24,20,.9);}
 
-/* ––––– Memory game specifics ––––– */
+/* ---------- Memory game specifics ---------- */
 .mem-progress{
-position:absolute;top:14px;right:14px;
-font-size:13px;font-weight:600;color:var(–gold-light);
-background:rgba(0,0,0,.3);padding:6px 12px;border-radius:8px;
-letter-spacing:.04em;
+  position:absolute;top:14px;right:14px;
+  font-size:13px;font-weight:600;color:var(--gold-light);
+  background:rgba(0,0,0,.3);padding:6px 12px;border-radius:8px;
+  letter-spacing:.04em;
 }
 .mem-rank-grid{
-display:grid;grid-template-columns:repeat(7, 1fr);gap:6px;
-width:100%;max-width:360px;margin:12px 0;
+  display:grid;grid-template-columns:repeat(7, 1fr);gap:6px;
+  width:100%;max-width:360px;margin:12px 0;
 }
 .mem-rank-grid button{
-padding:12px 4px;font-size:15px;font-weight:700;
-border-radius:8px;border:1px solid rgba(230,204,133,.3);
-background:rgba(0,0,0,.25);color:var(–cream);cursor:pointer;
-transition:all .15s;
+  padding:12px 4px;font-size:15px;font-weight:700;
+  border-radius:8px;border:1px solid rgba(230,204,133,.3);
+  background:rgba(0,0,0,.25);color:var(--cream);cursor:pointer;
+  transition:all .15s;
 }
 .mem-rank-grid button:hover{background:rgba(230,204,133,.15);}
-.mem-rank-grid button.active{background:var(–gold);color:var(–ink);border-color:var(–gold);}
+.mem-rank-grid button.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
 .mem-suit-grid{
-display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;
-width:100%;max-width:280px;margin:12px 0;
+  display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;
+  width:100%;max-width:280px;margin:12px 0;
 }
 .mem-suit-grid button{
-padding:14px 4px;font-size:24px;
-border-radius:8px;border:1px solid rgba(230,204,133,.3);
-background:rgba(0,0,0,.25);cursor:pointer;transition:all .15s;
+  padding:14px 4px;font-size:24px;
+  border-radius:8px;border:1px solid rgba(230,204,133,.3);
+  background:rgba(0,0,0,.25);cursor:pointer;transition:all .15s;
 }
 .mem-suit-grid button.red{color:#e05a4a;}
 .mem-suit-grid button.black{color:#e8e2d0;}
 .mem-suit-grid button:hover{background:rgba(230,204,133,.15);}
 .mem-current-choice{
-font-size:14px;color:var(–gold-light);margin:8px 0;
-min-height:20px;font-weight:600;
+  font-size:14px;color:var(--gold-light);margin:8px 0;
+  min-height:20px;font-weight:600;
 }
 .verdict-icon{font-size:44px;line-height:1;}
-.verdict-main{font-family:‘Fraunces’,serif;font-size:22px;font-weight:600;color:var(–cream);}
-.verdict-sub{font-size:14px;opacity:.9;font-family:‘JetBrains Mono’,monospace;}
+.verdict-main{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--cream);}
+.verdict-sub{font-size:14px;opacity:.9;font-family:'JetBrains Mono',monospace;}
 .verdict-overlay.good .verdict-sub{color:#a6e6b0;}
 .verdict-overlay.bad .verdict-sub{color:#ffc2ba;}
-.prompt-overlay h3{margin:0;color:var(–gold-light);font-size:18px;}
+.prompt-overlay h3{margin:0;color:var(--gold-light);font-size:18px;}
 .prompt-inputs{display:flex;gap:10px;align-items:flex-end;}
 .prompt-inputs input{
-width:96px;text-align:center;font-size:24px;padding:10px;border-radius:9px;border:1px solid rgba(230,204,133,.4);
-background:rgba(255,255,255,.06);color:var(–cream);font-family:‘JetBrains Mono’,monospace;
+  width:96px;text-align:center;font-size:24px;padding:10px;border-radius:9px;border:1px solid rgba(230,204,133,.4);
+  background:rgba(255,255,255,.06);color:var(--cream);font-family:'JetBrains Mono',monospace;
 }
 .prompt-inputs label{display:block;font-size:10.5px;text-transform:uppercase;opacity:.55;margin-bottom:6px;text-align:center;letter-spacing:.06em;}
 .rc-step{
-width:46px;height:46px;border-radius:10px;border:1px solid rgba(230,204,133,.4);
-background:rgba(255,255,255,.06);color:var(–gold-light);font-size:24px;font-weight:700;
-display:flex;align-items:center;justify-content:center;line-height:1;
+  width:46px;height:46px;border-radius:10px;border:1px solid rgba(230,204,133,.4);
+  background:rgba(255,255,255,.06);color:var(--gold-light);font-size:24px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;line-height:1;
 }
 .rc-step:active{background:rgba(230,204,133,.2);}
 .rc-sign{
-background:transparent;border:1px solid rgba(230,204,133,.35);color:var(–gold-light);
-border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600;
+  background:transparent;border:1px solid rgba(230,204,133,.35);color:var(--gold-light);
+  border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600;
 }
 .result-flash{position:absolute;top:14px;left:50%;transform:translateX(-50%);
-padding:6px 16px;border-radius:20px;font-weight:700;font-size:13px;opacity:0;transition:opacity .2s;}
+  padding:6px 16px;border-radius:20px;font-weight:700;font-size:13px;opacity:0;transition:opacity .2s;}
 .result-flash.show{opacity:1;}
-.result-flash.good{background:var(–good);color:#fff;}
-.result-flash.bad{background:var(–bad);color:#fff;}
+.result-flash.good{background:var(--good);color:#fff;}
+.result-flash.bad{background:var(--bad);color:#fff;}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px;}
 .stat-box{background:rgba(0,0,0,.25);border:1px solid rgba(230,204,133,.15);border-radius:12px;padding:14px 16px;}
 .stat-box .s-label{font-size:11px;opacity:.55;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
-.stat-box .s-val{font-family:‘JetBrains Mono’,monospace;font-size:24px;font-weight:700;}
-.stat-box.session .s-val{color:var(–gold-light);}
+.stat-box .s-val{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;}
+.stat-box.session .s-val{color:var(--gold-light);}
 .stat-box.alltime .s-val{color:#9fd6ac;}
 
-/* ––––– Strategy tab ––––– */
+/* ---------- Strategy tab ---------- */
 .strategy-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;font-size:12px;}
 .legend-chip{display:flex;align-items:center;gap:6px;}
 .legend-swatch{width:14px;height:14px;border-radius:4px;}
 .strat-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(230,204,133,.15);}
 table.strat{border-collapse:collapse;width:100%;font-size:12.5px;table-layout:fixed;}
 table.strat th, table.strat td{
-text-align:center;padding:7px 2px;border:1px solid rgba(0,0,0,.25);overflow:hidden;
+  text-align:center;padding:7px 2px;border:1px solid rgba(0,0,0,.25);overflow:hidden;
 }
-table.strat thead th{background:rgba(0,0,0,.35);color:var(–gold-light);font-size:11px;letter-spacing:.02em;}
-table.strat tbody th{background:rgba(0,0,0,.28);color:var(–cream);font-weight:700;width:12%;font-size:11.5px;}
-td.act-H{background:var(–grey);color:#fff;}
-td.act-S{background:var(–blue);color:#fff;}
-td.act-D{background:var(–gold);color:var(–ink);}
+table.strat thead th{background:rgba(0,0,0,.35);color:var(--gold-light);font-size:11px;letter-spacing:.02em;}
+table.strat tbody th{background:rgba(0,0,0,.28);color:var(--cream);font-weight:700;width:12%;font-size:11.5px;}
+td.act-H{background:var(--grey);color:#fff;}
+td.act-S{background:var(--blue);color:#fff;}
+td.act-D{background:var(--gold);color:var(--ink);}
 td.act-Ds{background:#a5822e;color:#fff;}
-td.act-P{background:var(–purple);color:#fff;}
-td.act-R{background:var(–red);color:#fff;}
-.strat-section-title{margin:22px 0 8px;font-size:15px;color:var(–gold-light);font-weight:600;}
+td.act-P{background:var(--purple);color:#fff;}
+td.act-R{background:var(--red);color:#fff;}
+.strat-section-title{margin:22px 0 8px;font-size:15px;color:var(--gold-light);font-weight:600;}
 
 table.dev{border-collapse:collapse;width:100%;font-size:13px;}
 table.dev th,table.dev td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;}
-table.dev th{color:var(–gold-light);font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.75;}
+table.dev th{color:var(--gold-light);font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.75;}
 table.dev td.action-tag{font-weight:700;}
 .action-tag.S{color:#8fc3ef;}
-.action-tag.D{color:var(–gold-light);}
+.action-tag.D{color:var(--gold-light);}
 .action-tag.H{color:#c9c3b4;}
 .action-tag.P{color:#c3a6e6;}
 
 .info-note{font-size:12.5px;opacity:.65;line-height:1.5;margin-top:10px;}
 .insurance-callout{
-display:flex;gap:10px;align-items:flex-start;margin:6px 0 14px;
-background:rgba(201,162,75,.12);border:1px solid rgba(230,204,133,.3);
-border-radius:11px;padding:12px 14px;font-size:13px;line-height:1.45;
+  display:flex;gap:10px;align-items:flex-start;margin:6px 0 14px;
+  background:rgba(201,162,75,.12);border:1px solid rgba(230,204,133,.3);
+  border-radius:11px;padding:12px 14px;font-size:13px;line-height:1.45;
 }
-.insurance-callout strong{color:var(–gold-light);}
+.insurance-callout strong{color:var(--gold-light);}
 .insurance-callout .ic-icon{font-size:20px;line-height:1.2;}
 
 @media (max-width:720px){
-#app{padding:10px 10px 14px;}
-/* compact header */
-.topbar{flex-direction:column;align-items:stretch;gap:12px;padding:2px 2px 12px;margin-bottom:12px;}
-.brand{gap:9px;}
-.brand .mark{width:30px;height:30px;font-size:13px;}
-.brand h1{font-size:19px;}
-.brand .tag{font-size:10px;}
-.tabs{width:100%;}
-.tab-btn{flex:1;padding:9px 4px;font-size:13px;}
+  #app{padding:10px 10px 14px;}
+  /* compact header */
+  .topbar{flex-direction:column;align-items:stretch;gap:12px;padding:2px 2px 12px;margin-bottom:12px;}
+  .brand{gap:9px;}
+  .brand .mark{width:30px;height:30px;font-size:13px;}
+  .brand h1{font-size:19px;}
+  .brand .tag{font-size:10px;}
+  .tabs{width:100%;}
+  .tab-btn{flex:1;padding:9px 4px;font-size:13px;}
 
-/* when the table is live, lock the play view to one screen */
-#view-play.playing .felt{
-flex:1;min-height:0;border-radius:22px;padding:8px;border-width:8px;
-}
-#view-play.playing .action-bar{flex:none;}
-#view-play.playing .table-footer{flex:none;margin-top:8px;}
-body.playing{overflow:hidden;height:100dvh;}
-body.playing #app{
-display:flex;flex-direction:column;
-height:100dvh;overflow:hidden;
-padding-top:8px;padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 6px);
-}
-body.playing .topbar{flex:none;margin-bottom:8px;padding-bottom:8px;}
-body.playing #view-play{flex:1;min-height:0;display:flex;flex-direction:column;}
-#view-play.playing .table-wrap{
-flex:1;min-height:0;height:auto;
-display:flex;flex-direction:column;
-}
+  /* when the table is live, lock the play view to one screen */
+  #view-play.playing .felt{
+    flex:1;min-height:0;border-radius:22px;padding:8px;border-width:8px;
+  }
+  #view-play.playing .action-bar{flex:none;}
+  #view-play.playing .table-footer{flex:none;margin-top:8px;}
+  body.playing{overflow:hidden;height:100dvh;}
+  body.playing #app{
+    display:flex;flex-direction:column;
+    height:100dvh;overflow:hidden;
+    padding-top:8px;padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 6px);
+  }
+  body.playing .topbar{flex:none;margin-bottom:8px;padding-bottom:8px;}
+  body.playing #view-play{flex:1;min-height:0;display:flex;flex-direction:column;}
+  #view-play.playing .table-wrap{
+    flex:1;min-height:0;height:auto;
+    display:flex;flex-direction:column;
+  }
 
-.felt::before{font-size:8px;top:44%;letter-spacing:.12em;}
-.dealer-zone{top:2%;width:216px;}
-.dealer-label{font-size:10px;margin-bottom:3px;}
+  .felt::before{font-size:8px;top:44%;letter-spacing:.12em;}
+  .dealer-zone{top:2%;width:216px;}
+  .dealer-label{font-size:10px;margin-bottom:3px;}
 
-.card{width:68px;height:96px;border-radius:8px;}
-.hand-cards{min-height:100px;}
-/* Dealer : jusqu’à 4 cartes par ligne, 2 lignes max. Ligne 2 quasi posée
-sur la ligne 1 — seul le coin (rang + couleur) reste visible. */
-.hand-cards.stacked{
-flex-wrap:wrap;justify-content:center;
-max-width:212px;margin:0 auto;
-}
-.hand-cards.stacked .card{margin-left:-24px;position:relative;}
-.hand-cards.stacked .card:first-child{margin-left:0;}
-.hand-cards.stacked .card:nth-child(5){margin-left:14px;transform:translateY(-68px);z-index:2;animation:none;}
-.hand-cards.stacked .card:nth-child(n+6){margin-left:-24px;transform:translateY(-68px);z-index:2;animation:none;}
-/* compenser le trou layout de la ligne 2 pour que le total remonte */
-.hand-cards.stacked.crowded{margin-bottom:-64px;}
+  .card{width:68px;height:96px;border-radius:8px;}
+  .hand-cards{min-height:100px;}
+  /* Dealer : le layout des cartes est géré en absolu par layoutHandCards() */
+  .hand-cards.stacked{margin:0 auto;}
 
-.seat{width:180px;}
-.seat .seat-label{font-size:9.5px;margin-bottom:3px;}
-.seat .hand-cards{transform:scale(.78);transform-origin:center top;min-height:90px;}
-.seat.me .hand-cards{transform:scale(.95);transform-origin:center top;}
-.seat-msg{font-size:10px;padding:2px 6px;}
-.hand-total{font-size:11px;margin-top:3px;}
+  .seat{width:180px;}
+  .seat .seat-label{font-size:9.5px;margin-bottom:3px;}
+  .seat .hand-cards{transform:scale(.78);transform-origin:center top;min-height:90px;}
+  .seat.me .hand-cards{transform:scale(.95);transform-origin:center top;}
+  .seat-msg{font-size:10px;padding:2px 6px;}
+  .hand-total{font-size:11px;margin-top:3px;}
 
-.metrics-rail{top:9px;left:9px;gap:5px;}
-.metric-chip{padding:5px 9px;min-width:60px;}
-.metric-chip .m-val{font-size:16px;}
-.metric-chip .m-label{font-size:8.5px;}
-.metric-chip .m-hint{display:none;}
+  .metrics-rail{top:9px;left:9px;gap:5px;}
+  .metric-chip{padding:5px 9px;min-width:60px;}
+  .metric-chip .m-val{font-size:16px;}
+  .metric-chip .m-label{font-size:8.5px;}
+  .metric-chip .m-hint{display:none;}
 
-.feedback-banner{margin-top:8px;padding:8px 12px;font-size:12.5px;}
-.feedback-banner .sub{font-size:11px;}
+  .feedback-banner{margin-top:8px;padding:8px 12px;font-size:12.5px;}
+  .feedback-banner .sub{font-size:11px;}
 
-.action-bar{gap:6px;margin-top:10px;}
-.action-bar button{min-width:0;flex:1;font-size:12.5px;padding:11px 4px;}
+  .action-bar{gap:6px;margin-top:10px;}
+  .action-bar button{min-width:0;flex:1;font-size:12.5px;padding:11px 4px;}
 
-.deal-card{width:104px;height:150px;}
+  .deal-card{width:104px;height:150px;}
 
-.deal-card .face{font-size:26px;}
-.deck-visual{width:82px;height:120px;}
-.flash-card-zone{margin-top:104px;min-height:164px;}
+  .deal-card .face{font-size:26px;}
+  .deck-visual{width:82px;height:120px;}
+  .flash-card-zone{margin-top:104px;min-height:164px;}
 
-/* strategy tables fit the screen — no horizontal scroll */
-table.strat{font-size:11px;}
-table.strat th, table.strat td{padding:5px 1px;}
-table.strat thead th{font-size:10px;}
-table.strat tbody th{font-size:10px;width:13%;}
-.strategy-legend{gap:8px 12px;font-size:11px;}
+  /* strategy tables fit the screen — no horizontal scroll */
+  table.strat{font-size:11px;}
+  table.strat th, table.strat td{padding:5px 1px;}
+  table.strat thead th{font-size:10px;}
+  table.strat tbody th{font-size:10px;width:13%;}
+  .strategy-legend{gap:8px 12px;font-size:11px;}
 }
 </style>
-
 </head>
 <body>
 
 <!-- ============ ÉCRAN D'ACCUEIL ============ -->
-
 <div id="welcome">
   <div class="welcome-inner">
     <div class="welcome-hero">
@@ -689,107 +675,102 @@ table.strat tbody th{font-size:10px;width:13%;}
   </div>
 
   <!-- ============ TAB: PLAY ============ -->
-
   <div class="view active" id="view-play">
 
-```
-<div class="card-panel" id="setup-panel">
-  <h2>Configurer la partie</h2>
-  <div class="sub">Choisis les règles de la table avant de t'asseoir.</div>
-  <div class="field-grid">
-    <div class="field">
-      <label>Nombre de paquets</label>
-      <input type="range" id="cfg-decks" min="1" max="8" value="6">
-      <div class="value-line"><span id="cfg-decks-val">6</span> paquet(s)</div>
-    </div>
-    <div class="field">
-      <label>Autres joueurs (robots)</label>
-      <input type="range" id="cfg-bots" min="0" max="2" value="2">
-      <div class="value-line"><span id="cfg-bots-val">2</span> robot(s) à table</div>
-    </div>
-    <div class="field">
-      <label>Ma position à la table</label>
-      <div class="seg" id="cfg-seat-seg"></div>
-    </div>
-  </div>
-  <div style="height:6px"></div>
-  <div class="field-grid">
-    <div class="field">
-      <div class="toggle-row">
-        <div class="lbl">Le croupier tire sur 17 faible<span class="hint">Soft 17 → H17 (tire) / S17 (reste)</span></div>
-        <button class="switch" id="cfg-h17"></button>
+    <div class="card-panel" id="setup-panel">
+      <h2>Configurer la partie</h2>
+      <div class="sub">Choisis les règles de la table avant de t'asseoir.</div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Nombre de paquets</label>
+          <input type="range" id="cfg-decks" min="1" max="8" value="6">
+          <div class="value-line"><span id="cfg-decks-val">6</span> paquet(s)</div>
+        </div>
+        <div class="field">
+          <label>Autres joueurs (robots)</label>
+          <input type="range" id="cfg-bots" min="0" max="2" value="2">
+          <div class="value-line"><span id="cfg-bots-val">2</span> robot(s) à table</div>
+        </div>
+        <div class="field">
+          <label>Ma position à la table</label>
+          <div class="seg" id="cfg-seat-seg"></div>
+        </div>
       </div>
-      <div class="toggle-row">
-        <div class="lbl">Double après split autorisé<span class="hint">DAS</span></div>
-        <button class="switch on" id="cfg-das"></button>
+      <div style="height:6px"></div>
+      <div class="field-grid">
+        <div class="field">
+          <div class="toggle-row">
+            <div class="lbl">Le croupier tire sur 17 faible<span class="hint">Soft 17 → H17 (tire) / S17 (reste)</span></div>
+            <button class="switch" id="cfg-h17"></button>
+          </div>
+          <div class="toggle-row">
+            <div class="lbl">Double après split autorisé<span class="hint">DAS</span></div>
+            <button class="switch on" id="cfg-das"></button>
+          </div>
+          <div class="toggle-row">
+            <div class="lbl">Abandon autorisé<span class="hint">Surrender tardif</span></div>
+            <button class="switch" id="cfg-surrender"></button>
+          </div>
+        </div>
       </div>
-      <div class="toggle-row">
-        <div class="lbl">Abandon autorisé<span class="hint">Surrender tardif</span></div>
-        <button class="switch" id="cfg-surrender"></button>
+      <div class="setup-actions">
+        <button class="btn btn-gold" id="btn-start-game">S'asseoir à la table</button>
       </div>
     </div>
-  </div>
-  <div class="setup-actions">
-    <button class="btn btn-gold" id="btn-start-game">S'asseoir à la table</button>
-  </div>
-</div>
 
-<div class="table-wrap hidden" id="table-panel">
-  <div class="felt">
-    <div class="felt-illus" id="felt-illus"></div>
-    <div class="metrics-rail" id="metrics-rail">
-      <div class="metric-chip">
-        <div class="m-label">Paquets</div>
-        <div class="m-val" id="metric-decks">6.0</div>
+    <div class="table-wrap hidden" id="table-panel">
+      <div class="felt">
+        <div class="felt-illus" id="felt-illus"></div>
+        <div class="metrics-rail" id="metrics-rail">
+          <div class="metric-chip">
+            <div class="m-label">Paquets</div>
+            <div class="m-val" id="metric-decks">6.0</div>
+          </div>
+          <div class="metric-chip secret" id="metric-count-chip">
+            <div class="m-label">RC</div>
+            <div class="m-val" id="metric-count">0</div>
+            <div class="m-hint">révéler</div>
+          </div>
+          <div class="metric-chip secret" id="metric-tc-chip">
+            <div class="m-label">TC</div>
+            <div class="m-val" id="metric-tc">0.0</div>
+            <div class="m-hint">révéler</div>
+          </div>
+        </div>
+        <div class="score-overlay" id="score-overlay">
+          <div class="so-label">Décisions</div>
+          <div class="so-pct" id="score-pct">—</div>
+          <div class="so-detail"><span class="so-good" id="score-good">0</span> / <span class="so-bad" id="score-bad">0</span></div>
+        </div>
+        <div class="dealer-zone">
+          <div class="dealer-label">Croupier</div>
+          <div class="hand-cards stacked" id="dealer-cards"></div>
+          <div class="hand-total" id="dealer-total">&nbsp;</div>
+        </div>
+        <div class="seats-ring" id="seats-ring"></div>
       </div>
-      <div class="metric-chip secret" id="metric-count-chip">
-        <div class="m-label">RC</div>
-        <div class="m-val" id="metric-count">0</div>
-        <div class="m-hint">révéler</div>
+
+      <div class="feedback-banner" id="feedback-banner">
+        <div><span id="feedback-main"></span><span class="sub" id="feedback-sub"></span></div>
       </div>
-      <div class="metric-chip secret" id="metric-tc-chip">
-        <div class="m-label">TC</div>
-        <div class="m-val" id="metric-tc">0.0</div>
-        <div class="m-hint">révéler</div>
+
+      <div class="action-bar" id="action-bar">
+        <button class="act-hit" id="act-hit">Tirer</button>
+        <button class="act-stand" id="act-stand">Rester</button>
+        <button class="act-double" id="act-double">Doubler</button>
+        <button class="act-split" id="act-split">Séparer</button>
+        <button class="act-surrender" id="act-surrender">Abandon</button>
+      </div>
+
+      <div class="table-footer">
+        <button class="btn btn-outline btn-slim" id="btn-leave-table">Quitter la table</button>
+        <button class="btn btn-gold" id="btn-next-hand" style="display:none;">Main suivante</button>
+        <button class="btn-ambiance" id="table-theme-btn">🎨 Ambiance</button>
       </div>
     </div>
-    <div class="score-overlay" id="score-overlay">
-      <div class="so-label">Décisions</div>
-      <div class="so-pct" id="score-pct">—</div>
-      <div class="so-detail"><span class="so-good" id="score-good">0</span> / <span class="so-bad" id="score-bad">0</span></div>
-    </div>
-    <div class="dealer-zone">
-      <div class="dealer-label">Croupier</div>
-      <div class="hand-cards stacked" id="dealer-cards"></div>
-      <div class="hand-total" id="dealer-total">&nbsp;</div>
-    </div>
-    <div class="seats-ring" id="seats-ring"></div>
-  </div>
-
-  <div class="feedback-banner" id="feedback-banner">
-    <div><span id="feedback-main"></span><span class="sub" id="feedback-sub"></span></div>
-  </div>
-
-  <div class="action-bar" id="action-bar">
-    <button class="act-hit" id="act-hit">Tirer</button>
-    <button class="act-stand" id="act-stand">Rester</button>
-    <button class="act-double" id="act-double">Doubler</button>
-    <button class="act-split" id="act-split">Séparer</button>
-    <button class="act-surrender" id="act-surrender">Abandon</button>
-  </div>
-
-  <div class="table-footer">
-    <button class="btn btn-outline btn-slim" id="btn-leave-table">Quitter la table</button>
-    <button class="btn btn-gold" id="btn-next-hand" style="display:none;">Main suivante</button>
-    <button class="btn-ambiance" id="table-theme-btn">🎨 Ambiance</button>
-  </div>
-</div>
-```
-
   </div>
 
   <!-- ============ MODAL AMBIANCE ============ -->
-
   <div class="theme-modal-overlay" id="theme-modal-overlay">
     <div class="theme-modal">
       <h3>Ambiance de la table</h3>
@@ -802,7 +783,6 @@ table.strat tbody th{font-size:10px;width:13%;}
   </div>
 
   <!-- ============ TAB: COUNT TRAINING ============ -->
-
   <div class="view" id="view-count">
     <div class="card-panel" id="count-setup">
       <h2>Entraînement au comptage</h2>
@@ -839,54 +819,50 @@ table.strat tbody th{font-size:10px;width:13%;}
       </div>
     </div>
 
-```
-<div class="card-panel hidden" id="count-session">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-    <h2 style="margin:0;">Session en cours</h2>
-    <button class="btn btn-outline" id="btn-stop-count">Arrêter</button>
-  </div>
-  <div class="count-stage" id="count-stage">
-    <div class="deck-visual" id="ct-deck">
-      <div class="deck-card"></div><div class="deck-card"></div>
-      <div class="deck-card"></div><div class="deck-card"></div>
-      <div class="deck-label">Sabot</div>
-    </div>
-    <!-- Mode Flux : pile de cartes qui s'empilent -->
-    <div class="pile-zone" id="pile-zone"></div>
-    <!-- Mode Table : positions des joueurs + croupier -->
-    <div class="ct-table" id="ct-table"></div>
-    <div class="prompt-overlay" id="ct-prompt-overlay">
-      <h3>Quel est le compte courant ?</h3>
-      <div class="prompt-inputs">
-        <button type="button" class="rc-step" id="ct-minus">−</button>
-        <div>
-          <label>Running Count</label>
-          <input type="text" id="ct-input-rc" inputmode="numeric" pattern="-?[0-9]*" value="0">
-        </div>
-        <button type="button" class="rc-step" id="ct-plus">+</button>
+    <div class="card-panel hidden" id="count-session">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h2 style="margin:0;">Session en cours</h2>
+        <button class="btn btn-outline" id="btn-stop-count">Arrêter</button>
       </div>
-      <button type="button" class="rc-sign" id="ct-sign">Inverser le signe (±)</button>
-      <button class="btn btn-gold" id="ct-submit-guess">Valider</button>
+      <div class="count-stage" id="count-stage">
+        <div class="deck-visual" id="ct-deck">
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-label">Sabot</div>
+        </div>
+        <!-- Mode Flux : pile de cartes qui s'empilent -->
+        <div class="pile-zone" id="pile-zone"></div>
+        <!-- Mode Table : positions des joueurs + croupier -->
+        <div class="ct-table" id="ct-table"></div>
+        <div class="prompt-overlay" id="ct-prompt-overlay">
+          <h3>Quel est le compte courant ?</h3>
+          <div class="prompt-inputs">
+            <button type="button" class="rc-step" id="ct-minus">−</button>
+            <div>
+              <label>Running Count</label>
+              <input type="text" id="ct-input-rc" inputmode="numeric" pattern="-?[0-9]*" value="0">
+            </div>
+            <button type="button" class="rc-step" id="ct-plus">+</button>
+          </div>
+          <button type="button" class="rc-sign" id="ct-sign">Inverser le signe (±)</button>
+          <button class="btn btn-gold" id="ct-submit-guess">Valider</button>
+        </div>
+        <div class="verdict-overlay" id="ct-verdict-overlay">
+          <div class="verdict-icon" id="ct-verdict-icon"></div>
+          <div class="verdict-main" id="ct-verdict-main"></div>
+          <div class="verdict-sub" id="ct-verdict-sub"></div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box session"><div class="s-label">Bons — session</div><div class="s-val" id="ct-session-good">0</div></div>
+        <div class="stat-box session"><div class="s-label">Erreurs — session</div><div class="s-val" id="ct-session-bad">0</div></div>
+        <div class="stat-box alltime"><div class="s-label">Bons — total</div><div class="s-val" id="ct-alltime-good">0</div></div>
+        <div class="stat-box alltime"><div class="s-label">Erreurs — total</div><div class="s-val" id="ct-alltime-bad">0</div></div>
+      </div>
     </div>
-    <div class="verdict-overlay" id="ct-verdict-overlay">
-      <div class="verdict-icon" id="ct-verdict-icon"></div>
-      <div class="verdict-main" id="ct-verdict-main"></div>
-      <div class="verdict-sub" id="ct-verdict-sub"></div>
-    </div>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-box session"><div class="s-label">Bons — session</div><div class="s-val" id="ct-session-good">0</div></div>
-    <div class="stat-box session"><div class="s-label">Erreurs — session</div><div class="s-val" id="ct-session-bad">0</div></div>
-    <div class="stat-box alltime"><div class="s-label">Bons — total</div><div class="s-val" id="ct-alltime-good">0</div></div>
-    <div class="stat-box alltime"><div class="s-label">Erreurs — total</div><div class="s-val" id="ct-alltime-bad">0</div></div>
-  </div>
-</div>
-```
-
   </div>
 
   <!-- ============ TAB: MEMORY ============ -->
-
   <div class="view" id="view-memory">
     <div class="card-panel" id="memory-setup">
       <h2>Entraînement mémoire</h2>
@@ -908,48 +884,44 @@ table.strat tbody th{font-size:10px;width:13%;}
       </div>
     </div>
 
-```
-<div class="card-panel hidden" id="memory-session">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-    <h2 style="margin:0;">Session mémoire</h2>
-    <button class="btn btn-outline" id="btn-stop-memory">Arrêter</button>
-  </div>
-  <div class="count-stage" id="mem-stage">
-    <div class="deck-visual" id="mem-deck">
-      <div class="deck-card"></div><div class="deck-card"></div>
-      <div class="deck-card"></div><div class="deck-card"></div>
-      <div class="deck-label">Sabot</div>
+    <div class="card-panel hidden" id="memory-session">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h2 style="margin:0;">Session mémoire</h2>
+        <button class="btn btn-outline" id="btn-stop-memory">Arrêter</button>
+      </div>
+      <div class="count-stage" id="mem-stage">
+        <div class="deck-visual" id="mem-deck">
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-card"></div><div class="deck-card"></div>
+          <div class="deck-label">Sabot</div>
+        </div>
+        <div class="pile-zone" id="mem-pile"></div>
+        <div class="mem-progress" id="mem-progress">
+          <span id="mem-shown">0</span> / <span id="mem-total">0</span>
+        </div>
+        <div class="prompt-overlay" id="mem-prompt-overlay">
+          <h3 id="mem-prompt-title">Quelle est la dernière carte ?</h3>
+          <div class="mem-rank-grid" id="mem-rank-grid"></div>
+          <div class="mem-suit-grid" id="mem-suit-grid" style="display:none;"></div>
+          <div class="mem-current-choice" id="mem-current-choice"></div>
+          <button class="btn btn-outline btn-slim" id="mem-back-btn" style="display:none;">← Changer le rang</button>
+        </div>
+        <div class="verdict-overlay" id="mem-verdict-overlay">
+          <div class="verdict-icon" id="mem-verdict-icon"></div>
+          <div class="verdict-main" id="mem-verdict-main"></div>
+          <div class="verdict-sub" id="mem-verdict-sub"></div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box session"><div class="s-label">Bons — session</div><div class="s-val" id="mem-session-good">0</div></div>
+        <div class="stat-box session"><div class="s-label">Erreurs — session</div><div class="s-val" id="mem-session-bad">0</div></div>
+        <div class="stat-box alltime"><div class="s-label">Bons — total</div><div class="s-val" id="mem-alltime-good">0</div></div>
+        <div class="stat-box alltime"><div class="s-label">Erreurs — total</div><div class="s-val" id="mem-alltime-bad">0</div></div>
+      </div>
     </div>
-    <div class="pile-zone" id="mem-pile"></div>
-    <div class="mem-progress" id="mem-progress">
-      <span id="mem-shown">0</span> / <span id="mem-total">0</span>
-    </div>
-    <div class="prompt-overlay" id="mem-prompt-overlay">
-      <h3 id="mem-prompt-title">Quelle est la dernière carte ?</h3>
-      <div class="mem-rank-grid" id="mem-rank-grid"></div>
-      <div class="mem-suit-grid" id="mem-suit-grid" style="display:none;"></div>
-      <div class="mem-current-choice" id="mem-current-choice"></div>
-      <button class="btn btn-outline btn-slim" id="mem-back-btn" style="display:none;">← Changer le rang</button>
-    </div>
-    <div class="verdict-overlay" id="mem-verdict-overlay">
-      <div class="verdict-icon" id="mem-verdict-icon"></div>
-      <div class="verdict-main" id="mem-verdict-main"></div>
-      <div class="verdict-sub" id="mem-verdict-sub"></div>
-    </div>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-box session"><div class="s-label">Bons — session</div><div class="s-val" id="mem-session-good">0</div></div>
-    <div class="stat-box session"><div class="s-label">Erreurs — session</div><div class="s-val" id="mem-session-bad">0</div></div>
-    <div class="stat-box alltime"><div class="s-label">Bons — total</div><div class="s-val" id="mem-alltime-good">0</div></div>
-    <div class="stat-box alltime"><div class="s-label">Erreurs — total</div><div class="s-val" id="mem-alltime-bad">0</div></div>
-  </div>
-</div>
-```
-
   </div>
 
   <!-- ============ TAB: STRATEGY ============ -->
-
   <div class="view" id="view-strategy">
     <div class="card-panel">
       <h2>Stratégie de base</h2>
@@ -963,31 +935,28 @@ table.strat tbody th{font-size:10px;width:13%;}
         <div class="legend-chip"><div class="legend-swatch" style="background:var(--red)"></div>Abandon sinon tirer (R)</div>
       </div>
 
-```
-  <div class="strat-section-title">Totaux durs</div>
-  <div class="strat-table-wrap"><table class="strat" id="table-hard"></table></div>
+      <div class="strat-section-title">Totaux durs</div>
+      <div class="strat-table-wrap"><table class="strat" id="table-hard"></table></div>
 
-  <div class="strat-section-title">Totaux souples (avec As)</div>
-  <div class="strat-table-wrap"><table class="strat" id="table-soft"></table></div>
+      <div class="strat-section-title">Totaux souples (avec As)</div>
+      <div class="strat-table-wrap"><table class="strat" id="table-soft"></table></div>
 
-  <div class="strat-section-title">Paires</div>
-  <div class="strat-table-wrap"><table class="strat" id="table-pairs"></table></div>
+      <div class="strat-section-title">Paires</div>
+      <div class="strat-table-wrap"><table class="strat" id="table-pairs"></table></div>
 
-  <div class="info-note">Table calculée pour : croupier reste sur 17 (S17 par défaut, s'ajuste avec H17), double après split autorisé. Change les règles dans l'onglet Table pour un effet sur le jeu — cette référence reste la version standard la plus répandue. Les séparations multiples sont autorisées jusqu'à 4 mains (3 resplits) ; une paire d'As séparée ne reçoit qu'une seule carte par main, sans nouveau tirage ni double possible (règle standard de casino).</div>
-</div>
+      <div class="info-note">Table calculée pour : croupier reste sur 17 (S17 par défaut, s'ajuste avec H17), double après split autorisé. Change les règles dans l'onglet Table pour un effet sur le jeu — cette référence reste la version standard la plus répandue. Les séparations multiples sont autorisées jusqu'à 4 mains (3 resplits) ; une paire d'As séparée ne reçoit qu'une seule carte par main, sans nouveau tirage ni double possible (règle standard de casino).</div>
+    </div>
 
-<div class="card-panel">
-  <h2>Déviations selon le True Count</h2>
-  <div class="sub">L'Illustrious 18 complet de Don Schlesinger (Blackjack Attack) — les écarts les plus rentables par rapport à la stratégie de base, calibrés pour 6 paquets / S17 / DAS.</div>
-  <div class="insurance-callout">
-    <span class="ic-icon">🛡️</span>
-    <div><strong>Assurance</strong> — quand le croupier montre un As, il te propose l'assurance. Ne la prends <em>que</em> si le True Count est ≥ +3. En dessous, refuse toujours.</div>
-  </div>
-  <table class="dev" id="table-deviations"></table>
-  <div class="info-note">La colonne <strong>TC</strong> indique le seuil : un chiffre positif = applique l'action dès que le TC monte à cette valeur ; un chiffre négatif = applique-la quand le TC descend à cette valeur (sinon reste sur la stratégie de base). Les deux séparations de dix (10,10 vs 5 et vs 6) sont incluses mais restent très visibles à la table — beaucoup de compteurs les retirent par prudence ("Sweet 16"). Les seuils se décalent d'1 à 2 points en H17 ou avec un nombre de paquets différent de 6.</div>
-</div>
-```
-
+    <div class="card-panel">
+      <h2>Déviations selon le True Count</h2>
+      <div class="sub">L'Illustrious 18 complet de Don Schlesinger (Blackjack Attack) — les écarts les plus rentables par rapport à la stratégie de base, calibrés pour 6 paquets / S17 / DAS.</div>
+      <div class="insurance-callout">
+        <span class="ic-icon">🛡️</span>
+        <div><strong>Assurance</strong> — quand le croupier montre un As, il te propose l'assurance. Ne la prends <em>que</em> si le True Count est ≥ +3. En dessous, refuse toujours.</div>
+      </div>
+      <table class="dev" id="table-deviations"></table>
+      <div class="info-note">La colonne <strong>TC</strong> indique le seuil : un chiffre positif = applique l'action dès que le TC monte à cette valeur ; un chiffre négatif = applique-la quand le TC descend à cette valeur (sinon reste sur la stratégie de base). Les deux séparations de dix (10,10 vs 5 et vs 6) sont incluses mais restent très visibles à la table — beaucoup de compteurs les retirent par prudence ("Sweet 16"). Les seuils se décalent d'1 à 2 points en H17 ou avec un nombre de paquets différent de 6.</div>
+    </div>
   </div>
 
 </div>
@@ -1420,6 +1389,42 @@ function syncCards(container, cards, hideSecond){
   }
 }
 
+/* Positionnement ABSOLU déterministe des cartes d'une main.
+   - perRow cartes par ligne, chevauchées horizontalement (une bande de ~68% visible)
+   - la ligne suivante est POSÉE sur la précédente : seul le coin haut (rang +
+     couleur, ~30% de la carte) de la ligne du dessus reste visible
+   - léger décalage horizontal (+14px) des lignes 2+ pour l'effet "paquet"
+   Le conteneur reçoit une largeur/hauteur exactes — aucun trou de layout,
+   aucun centrage flex hasardeux. */
+function layoutHandCards(wrap, perRow){
+  perRow = perRow || 3;
+  const cardEls = Array.from(wrap.children).filter(el=>el.classList.contains('card'));
+  if(!cardEls.length){ wrap.style.width=''; wrap.style.height=''; return; }
+  const cw = cardEls[0].offsetWidth || 68;
+  const ch = cardEls[0].offsetHeight || 96;
+  const visX = Math.round(cw*0.66);   // bande horizontale visible par carte
+  const peek = Math.round(ch*0.30);   // haut visible de la carte recouverte
+  wrap.style.position='relative';
+  wrap.style.display='block';
+  let maxRight=0, maxBottom=0;
+  cardEls.forEach((el,ci)=>{
+    const row = Math.floor(ci/perRow), col = ci%perRow;
+    const left = col*visX + (row>0 ? 14 : 0);
+    const top  = row*peek;
+    el.style.position='absolute';
+    el.style.left=left+'px';
+    el.style.top=top+'px';
+    el.style.marginLeft='0';
+    el.style.marginTop='0';
+    el.style.transform='';
+    el.style.zIndex=ci+1;
+    maxRight=Math.max(maxRight,left+cw);
+    maxBottom=Math.max(maxBottom,top+ch);
+  });
+  wrap.style.width=maxRight+'px';
+  wrap.style.height=maxBottom+'px';
+}
+
 async function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 /* ---------- Dealing / round flow ---------- */
@@ -1485,8 +1490,7 @@ function renderAll(){
   const hideHole = game && !game.holeCardRevealed && game.dealer.cards.length>1;
   const dCont = document.getElementById('dealer-cards');
   syncCards(dCont, game.dealer.cards, hideHole);
-  // 5+ cartes = 2e ligne : compenser le trou layout pour garder le total proche
-  dCont.classList.toggle('crowded', game.dealer.cards.length > 4);
+  layoutHandCards(dCont, 4);   // croupier : 4 cartes par ligne, 2 lignes max en pratique
   const dTotalEl = document.getElementById('dealer-total');
   if(hideHole){
     dTotalEl.textContent = rankValue(game.dealer.cards[0].rank)+' + ?';
@@ -1541,8 +1545,6 @@ function renderAll(){
     // chevauchement adapté : cartes réduites en split multiple
     // Ligne 2 quasi posée sur la ligne 1 : seul le coin (rang) reste visible
     const manyHands = s.hands.length >= 3;
-    const ovl = manyHands ? '-14px' : '-22px';
-    const row2y = manyHands ? 'translateY(-40px)' : 'translateY(-68px)';
     s.hands.forEach((h,hi)=>{
       const slot = cont.children[hi];
       const wrap = slot.querySelector('.hand-wrap');
@@ -1550,31 +1552,9 @@ function renderAll(){
       wrap.style.filter = (s.isMe && hi===s.activeHandIdx && s.hands.length>1)
         ? 'drop-shadow(0 0 7px rgba(230,204,133,.75))' : 'none';
       syncCards(wrap, h.cards, false);
-      // Layout des cartes :
-      // - ligne 1 : jusqu'à 3 cartes, chevauchement horizontal
-      // - ligne 2 : cartes 4+, wrap naturel + translateY pour chevauchement vertical
-      Array.from(wrap.children).forEach((cardEl,ci)=>{
-        cardEl.style.position = 'relative';
-        cardEl.style.transform = '';
-        cardEl.style.zIndex = ci;
-        if (ci === 0){
-          cardEl.style.marginLeft = '0';
-        } else if (ci < 3){
-          cardEl.style.marginLeft = ovl;
-        } else if (ci === 3){
-          // début ligne 2 — léger décalage horizontal pour montrer la carte du dessus
-          // (pas d'animation dealing : elle écraserait le translateY pendant .26s)
-          cardEl.classList.remove('dealing');
-          cardEl.style.marginLeft = '12px';
-          cardEl.style.transform = row2y;
-          cardEl.style.zIndex = 10 + ci;
-        } else {
-          cardEl.classList.remove('dealing');
-          cardEl.style.marginLeft = ovl;
-          cardEl.style.transform = row2y;
-          cardEl.style.zIndex = 10 + ci;
-        }
-      });
+      // Positionnement absolu déterministe : la ligne 2 se pose proprement
+      // sur la ligne 1 (seul le coin rang+couleur du dessus reste visible)
+      layoutHandCards(wrap, 3);
       // Mini-total (visible en split ou main chargée via CSS)
       if (h.cards.length > 0) {
         const hv = handValue(h.cards);
@@ -2572,6 +2552,5 @@ buildDeviationsTable();
 
 })();
 </script>
-
 </body>
 </html>
